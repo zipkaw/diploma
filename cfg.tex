@@ -1,0 +1,68 @@
+% Contains config of surnames & other
+% "~" - неразрывный пробел
+% "\ " - Явно поставить пробел после команды
+% Можно переиспользовать созданные выше переменные
+
+% Даты, приказы и номера
+\newcommand{\targetYear}{2022}
+%% Приказ
+\newcommand{\uniDecreeDate}{1 апреля \targetYear\ г.}
+\newcommand{\uniDecreeNumber}{892-с}
+\newcommand{\taskStartDate}{23 марта \targetYear\ г.}
+\newcommand{\taskFinishDate}{1 июня \targetYear\ г.}
+\newcommand{\diplomaVariant}{093}
+\newcommand{\econCalcDate}{02.04.\targetYear\ г.}
+
+% Люди
+\newcommand{\studentShort}{А.В.~Русакович}
+\newcommand{\studentFullParental}{Русакович Анны Вячеславовны}
+\newcommand{\stdTestTutorShort}{Е.Е.~Клинцевич}
+\newcommand{\headOfDepartmentShort}{Б.В.~Никульшин}
+\newcommand{\practiceTutorShort}{А.В.~Бушкевич}
+\newcommand{\practiceDepartmentTutorShort}{И.И.~Глецевич}
+\newcommand{\diplomaTutorShort}{\practiceDepartmentTutorShort}
+\newcommand{\diplomaDepartmentTutorShort}{\practiceDepartmentTutorShort}
+\newcommand{\diplomaEconomyTutorShort}{В.В.~Дершень}
+
+% Названия
+\newcommand{\taskNameFull}{Модуль приема и обработки GOOSE-пакетов}
+\newcommand{\economicalPartName}{Технико-экономическое обоснование разработки модуля
+    приема и обработки GOOSE-пакетов}
+\newcommand{\rub}{р.}
+\newcommand{\iec}{IEC}
+\newcommand{\isoIec}{ISO/IEC}
+\newcommand{\iso}{ISO}
+\newcommand{\ieee}{IEEE}
+\newcommand{\iecStd}{\iec\ 61850}
+\newcommand{\libIec}{libiec61850}
+\newcommand{\libXml}{libxml2}
+% Также ссылаемся на нужную часть библиографии
+\newcommand{\iecStdRef}[2]{\iecStd-{#1}-{#2}~\cite{IEC61850_#1_#2}}
+\newcommand{\xml}{XML}
+\newcommand{\cid}{ICD}
+\newcommand{\xsd}{XSD}
+
+% Схемы
+\newcommand{\structScheme}{ГУИР.400201.\diplomaVariant \ С1}
+\newcommand{\dataScheme}{ГУИР.400201.\diplomaVariant \ ПД.1}
+\newcommand{\blockScheme}{ГУИР.400201.\diplomaVariant \ ПД.2}
+\newcommand{\seqIcdScheme}{ГУИР.400201.\diplomaVariant \ РР.1}
+\newcommand{\seqGooseScheme}{ГУИР.400201.\diplomaVariant \ РР.2}
+
+% Модули структурного проектирования
+\newcommand{\moduleCfg}{конфигурации}
+\newcommand{\moduleXml}{обработки \xml}
+\newcommand{\moduleSettingsApply}{применения настроек}
+\newcommand{\moduleRecvPackets}{приема пакетов}
+\newcommand{\moduleThreads}{распределения нагрузки}
+\newcommand{\moduleProcessPackets}{обработки пакетов}
+\newcommand{\moduleDataStoring}{хранения данных}
+\newcommand{\moduleOsal}{обеспечения платформонезависимости}
+\newcommand{\moduleLog}{протоколирования}
+
+% Экономика
+\FPeval{\configRoundSigns}{2}
+\FPeval{\configPercentRoundSigns}{0}
+
+% Остальное
+\newcommand{\rubFormula}{\text{ \rub}}

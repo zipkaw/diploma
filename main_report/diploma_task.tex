@@ -1,0 +1,116 @@
+% For page mirroring
+\newgeometry{left=3cm,right=1.5cm,top=2.0cm,bottom=2.695cm,twoside}
+
+    \begin{center}
+      Министерство образования Республики Беларусь\\[1em]
+      Учреждение образования\\
+      БЕЛОРУССКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ \\
+      ИНФОРМАТИКИ И РАДИОЭЛЕКТРОНИКИ\\[1em]
+    \end{center}
+      Факультет: ФКСИС. Кафедра: ЭВМ. \\
+% Alt + 0171 => <<
+% Alt + 0187 => >>
+      Специальность: 40 02 01 <<Вычислительные машины, системы и сети>>. \\
+      Специализация: 40 02 01-01 <<Проектирование и применение локальных
+      компьютерных сетей>>.
+
+      \begin{flushright}
+        \begin{minipage}{0.4\textwidth}
+          \MakeUppercase{Утверждаю}\\
+          Заведующий кафедрой ЭВМ\\
+          \underline{\hspace*{2.2cm}} \headOfDepartmentShort \\
+          <<\underline{\hspace*{1cm}}>> \underline{\hspace*{2.5cm}} \targetYear\ г.
+        \end{minipage}\\[1em]
+      \end{flushright}
+
+    \begin{center}
+      {ЗАДАНИЕ}\\
+      {по дипломному проекту студента}\\
+      {\studentFullParental}\\[1em]
+    \end{center}
+
+    \begin{enumerate}[label=\textbf{\arabic*}, itemsep=1em,
+      leftmargin=*,
+      itemindent=\taskLiskSectionItemLeftIndent-\taskLiskSubsectionDelta]
+      \item Тема проекта: <<\taskNameFull>> -- утверждена приказом по университету от
+      % Force adding spaces after commands
+      {\uniDecreeDate \ \textnumero \ \uniDecreeNumber }.
+      \item Срок сдачи студентом законченного проекта: \taskFinishDate
+      \item Исходные данные к проекту:
+      \begin{enumerate_nest_bold_num}
+        \item Среда разработки: Microsoft Visual Studio Code.
+        \item Операционная система: Linux.
+        \item Языки программирования: C, C++.
+      \end{enumerate_nest_bold_num}
+
+      \item Содержание пояснительной записки (перечень подлежащих разработке вопросов):
+      \begin{enumerate_for_empty}
+        \item[] Введение. 1. Обзор литературы. 2. Системное проектирование.
+        3. Функциональное проектирование. 4. Разработка программных модулей.
+        5. Программа и методика испытаний. 6. Руководство пользователя.
+        7. \economicalPartName. Заключение.
+        Список использованных источников. Приложения.
+      \end{enumerate_for_empty}
+      \item Перечень графического материала (с точным указанием обязательных чертежей):
+      \begin{enumerate_nest_bold_num}
+        \item Вводный плакат. Плакат.
+        \item Заключительный плакат. Плакат.
+        \item \taskNameFull. Схема структурная.
+        \item \taskNameFull. Схема данных.
+        \item Обработка ICD-файла. Диаграмма последовательности.
+        \item Обработка входящего GOOSE-пакета. Диаграмма последовательности.
+        \item \taskNameFull. Обработка пакета. Схема программы.
+      \end{enumerate_nest_bold_num}
+      \item Содержание задания по экономической части:
+      <<\economicalPartName>>
+      \begin{enumerate_for_empty}
+        \item[] \vspace{1em}
+        % @{} for left margin removing in tabular
+        \begin{tabular}{ @{}p{0.75\textwidth - \taskLiskSubsectionDelta}p{0.25\textwidth} }
+         \MakeUppercase{Задание выдал} & \diplomaEconomyTutorShort
+        \end{tabular}
+      \end{enumerate_for_empty}
+    \end{enumerate}
+
+    \begin{center}
+      \vspace{1em}
+      {КАЛЕНДАРНЫЙ ПЛАН}\\
+      \vspace{1em}
+
+      \begin{tabular}
+                 {| >{\raggedright}m{0.43\textwidth}
+                  | >{\centering}m{0.08\textwidth}
+                  | >{\centering}m{0.18\textwidth}
+                  | >{\centering\arraybackslash}m{0.19\textwidth}|}
+        \hline
+          \centering Наименование этапов дипломного проекта
+        & Объем этапа, $ \% $ & Срок выполнения этапа & Примечания \\
+        \hline
+        Подбор и изучение литературы & 10 & 23.03 – 30.03 & \\ \hline
+        Структурное проектирование & 10 & 30.03 – 06.04 & \\ \hline
+        Функциональное проектирование & 20 & 06.04 – 20.04 & \\ \hline
+        Разработка программных модулей & 30 & 20.04 – 11.05 & \\ \hline
+        Программа и методика испытаний & 10 & 11.05 – 18.05 & \\ \hline
+        Расчет экономической эффективности & 10 & 18.05 – 25.05 & \\ \hline
+        Оформление пояснительной записки & 10 & 25.05 – 01.06 & \\ \hline
+      \end{tabular}
+    \end{center}
+
+    \vspace{1em}
+    \noindent
+    Дата выдачи задания: \taskStartDate
+
+    \vspace{1em}
+    \noindent
+    % @{} for left margin removing in tabular
+    \begin{tabular}{ @{}p{0.75\textwidth}p{0.25\textwidth} }
+      Руководитель & \diplomaTutorShort \\
+    \end{tabular}
+
+    \vspace{1em}
+    \noindent
+    \MakeUppercase{Задание принял к исполнению}\hspace*{1.5cm}\underline{\hspace*{2.5cm}}
+
+  \newpage
+
+\restoregeometry

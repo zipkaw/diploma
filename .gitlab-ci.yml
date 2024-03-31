@@ -1,0 +1,50 @@
+image: "ajiob/docker-xelatex-fonts:1.2.1"
+
+stages:
+  - build
+
+.main_pdf:
+  stage: build
+  variables:
+    # redefine it
+    MAKEFILE_ROOT: ""
+    DOC_NAME: "diploma_report.pdf"
+  script:
+    - make "$DOC_NAME" -C $MAKEFILE_ROOT
+    - mv "$MAKEFILE_ROOT/$DOC_NAME" report_"$CI_COMMIT_SHORT_SHA"-"$MAKEFILE_ROOT".pdf
+  artifacts:
+    name: "$CI_JOB_NAME-artifacts-$CI_COMMIT_SHORT_SHA"
+    paths:
+    - report_*.pdf
+    expire_in: 1 week
+
+.fast_pdf:
+  stage: build
+  variables:
+    # redefine it
+    MAKEFILE_ROOT: ""
+  script:
+    make fast -C $MAKEFILE_ROOT
+
+report_main_pdf:
+  extends: .main_pdf
+  variables:
+    MAKEFILE_ROOT: "main_report"
+
+report_main_fast_pdf:
+  extends: .fast_pdf
+  variables:
+    MAKEFILE_ROOT: "main_report"
+  allow_failure: true
+
+report_practice_pdf:
+  extends: .main_pdf
+  variables:
+    MAKEFILE_ROOT: "practice_report"
+    DOC_NAME: "practice_report.pdf"
+
+report_practice_fast_pdf:
+  extends: .fast_pdf
+  variables:
+    MAKEFILE_ROOT: "practice_report"
+  allow_failure: true

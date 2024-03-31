@@ -1,0 +1,144 @@
+@startuml
+
+autonumber
+
+' View config
+' skinparam dpi 300
+skinparam monochrome true
+skinparam shadowing false
+skinparam sequenceParticipant underline
+
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam defaultFontStyle italic
+
+skinparam SequenceMessageAlign center
+
+skinparam SequenceArrowThickness 1
+skinparam SequenceDividerBorderThickness 1
+skinparam SequenceGroupBorderThickness 1
+skinparam SequenceLifeLineBorderThickness 1
+skinparam SequenceParticipantBorderThickness 1
+skinparam SequenceReferenceBorderThickness 1
+skinparam SequenceParticipantBackgroundColor White
+skinparam SequenceBoxBackgroundColor White
+skinparam SequenceGroupBackgroundColor White
+
+skinparam ParticipantPadding 50
+
+skinparam MinClassWidth 80
+
+hide footbox
+' title Footer removed
+
+' Renaming titles
+!define config "Модуль конфигурации"
+!define xml "Модуль разбора XML"
+!define dataStore "Модуль хранения данных"
+!define apply "Модуль применения настроек"
+!define threads "Модуль распределения нагрузки"
+!define osal "Модуль обеспечения платформонезависимости"
+!define recv "Модуль приема GOOSE-пакетов"
+!define process "Модуль обработки GOOSE-пакетов"
+!define print "Модуль протоколирования"
+!define xml_obj "Внутреннее представление XML"
+!define dataStore_obj "Внутреннее представление данных"
+
+' Diagram
+-> config : Обработка ICD-файла
+activate config
+config -> xml : Загрузка ICD-файла
+activate xml
+
+xml -> osal : Чтение ICD-файла
+activate osal
+return Файл прочитан
+
+xml -> xml : Проверка данных на соответствие XSD-шаблону
+activate xml
+
+alt Обнаружено несоответствие
+    xml -> print : Вывод сообщения об ошибке
+    activate print
+    return Завершено
+end
+
+return Статус соответствия шаблону
+
+alt Данные соответствуют шаблону
+    create xml_obj
+    xml -> xml_obj : Создание внутреннего представления XML
+end
+
+return Статус загрузки
+
+alt Загрузка успешна
+    config -> config : Проверка данных на соответствие MMS-типам
+    activate config
+    loop Внутренние структуры XML
+        config -> xml_obj : Запрос типа данных
+        activate xml_obj
+        return Тип данных
+        alt Не найдено соответствующего MMS-типа
+            config -> print : Вывод сообщения о несоответствии типов
+            activate print
+            return Завершено
+        end
+    end
+    return Статус проверки
+end
+
+alt Все типы соответствуют
+    config -> dataStore : Запрос на создание внутренних структур хранения данных
+    activate dataStore
+    alt Некорректный запрос
+        dataStore -> print : Вывод сообщения об ошибке запроса создания данных
+
+        activate print
+        return Завершено
+    else Корректный запрос
+        create dataStore_obj
+        dataStore -> dataStore_obj : Создание внутреннего представления хранения данных
+    end
+    return Статус создания запроса
+
+    config -> dataStore_obj : Запрос на вычитывание данных из XML структур
+    activate dataStore_obj
+    loop Внутренние структуры XML
+        dataStore_obj -> xml_obj : Запрос данных для дальнейшего хранения
+        activate xml_obj
+        return Данные для хранения
+    end
+
+    return Запрос успешен
+
+    config -> xml : Очистка ресурсов
+    activate xml
+    xml -> xml_obj : Удалить внутренние ресурсы
+    destroy xml_obj
+    return Ресурсы освобождены
+
+    config -> dataStore : Запись полученных данных в память
+    activate dataStore
+    dataStore -> dataStore_obj : Проверка целостности
+    activate dataStore_obj
+    return Результаты проверки
+    alt Целостность не нарушена
+        dataStore -> dataStore_obj : Забрать данные для записи
+        activate dataStore_obj
+        return Данные предоставлены
+    else Данные повреждены
+        dataStore -> print : Вывод сообщения об ошибке записи в память
+        activate print
+        return Завершено
+    end
+    return Результат записи
+
+    config -> dataStore : Очистка ресурсов
+    activate dataStore
+    dataStore -> dataStore_obj : Удалить внутренние ресурсы
+    destroy dataStore_obj
+    return Ресурсы освобождены
+end
+
+@enduml

@@ -1,0 +1,355 @@
+\section{РАЗРАБОТКА ПРОГРАММНЫХ МОДУЛЕЙ}
+\label{sec:dev}
+
+В разделе разработки программных модулей
+описана разработка ключевых алгоритмов для данного дипломного проекта.
+
+\subsection{Алгоритм обработки GOOSE-пакета}
+
+Как изображено на схеме данных \dataScheme\ и было сказано выше, разрабатываемая система условно делится на две части:
+считывание информации из обновленного \cid-файла и запись в память модуля приема и обработки GOOSE-пакетов и
+прием, обработка и запись в память GOOSE-пакета. В результате разработки системы оказалось, что наибольший интерес
+представляют алгоритмы работы с принимаемыми данными.
+
+На блок-схеме алгоритма \blockScheme\ изображен алгоритм обработки входящих GOOSE-пакетов \lstinline{SHMEM_INPUTS_DATA} после считывания
+информации из модуля конфигурации и получения пакета. Описанный алгоритм работает с принятым пакетом, который представлен
+структурой типа \lstinline{GooseSubscriber}, определенной в библиотеке \libIec, и данными из модуля конфигурации, которые
+хранятся в локальной структуре в списке. Перед тем, как данные попадут в память, им необходимо пройти проверки на соответствие
+ожидаемому результату и обновление. В принятом GOOSE-пакете содержится новая информация, которая проходит необходимые циклы проверок
+и записывается в память при отсутствии ошибок.
+
+\subsection{Алгоритм разбора всей строки inAddr \cid-файла}
+
+\cid-файл состоит из огромного количества строк с разными тегами для всевозможных модулей. Для модуля приема и обработки GOOSE-пакетов соответствует тег
+inAddr. Он является своего рода ключом к необходимым данным для базовой настройки модуля. Из \cid-файла невозможно просто взять данные. Они
+представлены в неподходящем формате. Для того, чтобы с ними можно было в дальнейшем работать, текущий алгоритм переписывает данные в локальные структуры.
+Но информация может быть некорректная, неподходящий \cid-файл, поэтому нужно множество проверок для предотвращения аварийных ситуаций системы.
+
+Распишем данный алгоритм по шагам:
+\begin{enumerate_step}
+    \item Начало алгоритма.
+    \item \label{i:algo1:initData} Создать локальные переменные \lstinline{source}, \lstinline{mac}, \lstinline{goId}, \lstinline{appId}, \lstinline{confRev}, \lstinline{vars} все типа
+    \lstinline{const char} для хранения слов-ключей. В \lstinline{inAddr} все данные
+    записываются в одну строку, для того, чтобы отличать полезные данные и с ними работать,
+    необходимо их найти. Данные слова-ключи обеспечивают это.
+
+    \item Создать локальную переменную \lstinline{const_part_goId} типа \lstinline{const char} для дальнейшего формирования \lstinline{goCbRef}.
+
+    \item \label{i:algo1:wordsPointers} Создать локальные переменные \lstinline{idx_source}, \lstinline{idx_mac}, \lstinline{idx_goId}, \lstinline{idx_appId}, \lstinline{idx_confRev} и \lstinline{idx_vars} для отслеживания индексов полезных данных в строке \lstinline{inAddr}.
+    \item \label{i:algo1:createBufs} Создать локальные буферы \lstinline{temp_buffer_goId}, \lstinline{temp_buff_goCbRef} и \lstinline{temp_buff} размером \lstinline{CFG_MAX_BUF_SIZE} для промежуточного хранения и формирования необходимых данных из строки \lstinline{inAddr}.
+
+    \item Выполнить проверку на пустоту строки \lstinline{inAddr}. Если строка пуста, перейти
+    к шагу~\ref{i:algo1:invalidSid}.
+    \item Выполнить проверку на корректность строки \lstinline{inAddr}, а именно проверить соответствие последнего символа <<;>>. Если ошибка соответствия, перейти
+    к шагу~\ref{i:algo1:errorStringFormat}.
+
+    \item Выполнить поиск слова <<source>>, в
+    строке \lstinline{inAddr}.
+    \item Проверить результат поиска. Если слова \lstinline{source} нет в строке \lstinline{inAddr},
+    перейти к шагу~\ref{i:algo1:notSource}.
+    \item Выполнить поиск слова <<mac>>, в
+    строке \lstinline{inAddr}.
+    \item Проверить результат поиска. Если слова \lstinline{mac} нет в строке \lstinline{inAddr},
+    перейти к шагу~\ref{i:algo1:notMac}.
+    \item Выполнить поиск слова <<goId>>, в
+    строке \lstinline{inAddr}.
+    \item Проверить результат поиска. Если слова \lstinline{goId} нет в строке \lstinline{inAddr},
+    перейти к шагу~\ref{i:algo1:notGoId}.
+    \item Выполнить поиск слова <<appId>>, в
+    строке \lstinline{inAddr}.
+    \item Проверить результат поиска. Если слова \lstinline{appId} нет в строке \lstinline{inAddr},
+    перейти к шагу~\ref{i:algo1:notAppId}.
+    \item Выполнить поиск слова <<confRev>>, в
+    строке \lstinline{inAddr}.
+    \item Проверить результат поиска. Если слова \lstinline{confRev} нет в строке \lstinline{inAddr},
+    перейти к шагу~\ref{i:algo1:notConfRev}.
+    \item Выполнить поиск слова <<vars>> в
+    строке \lstinline{inAddr}.
+    \item Проверить результат поиска. Если слова <<vars>> нет в строке \lstinline{inAddr},
+    перейти к шагу~\ref{i:algo1:notVars}.
+
+    \item Найти указатели на концы слов в строке \lstinline{inAddr} и записать их в переменные, определенные в шаге~\ref{i:algo1:wordsPointers}.
+
+    \item Выполнить проверку формата строки \lstinline{inAddr}. Если слово <<source>> не
+    заканчивается символом <<;>> , то перейти к шагу~\ref{i:algo1:errorStringFormatSource}.
+    \item Выполнить проверку формата строки \lstinline{inAddr}. Если слово <<mac>> не
+    заканчивается символом <<;>> , то перейти к шагу~\ref{i:algo1:errorStringFormatMac}.
+    \item Выполнить проверку формата строки \lstinline{inAddr}. Если слово <<goId>> не
+    заканчивается символом <<;>> , то перейти к шагу~\ref{i:algo1:errorStringFormatGoId}.
+    \item Выполнить проверку формата строки \lstinline{inAddr}. Если слово <<appId>> не
+    заканчивается символом <<;>> , то перейти к шагу~\ref{i:algo1:errorStringFormatAppId}.
+    \item Выполнить проверку формата строки \lstinline{inAddr}. Если слово <<confRev>> не
+    заканчивается символом <<;>> , то перейти к шагу~\ref{i:algo1:errorStringFormatConfRev}.
+    \item Выполнить проверку формата строки \lstinline{inAddr}. Если слово <<vars>> не
+    заканчивается символом <<;>> , то перейти к шагу~\ref{i:algo1:errorStringFormatVars}.
+
+    % checking for the same goId
+    \item Присвоить локальной переменной значение индекса начала слова <<goId>>.
+    \item Выполнить проверку на содержание \lstinline{goId}. Если слово пустое, то перейти к шагу~\ref{i:algo1:goIdEmpty}.
+    \item Переписать значение \lstinline{goId} в локальный буфер, который был создан в шаге~\ref{i:algo1:createBufs}
+    \item Добавить в конец буфера из предыдущего шага символ <<\textbackslash 0>>.
+
+    % create goCbRef
+    \item На основе полученного \lstinline{goId} и переменных модуля приема и обработки GOOSE-пакетов \lstinline{ied_name}, \lstinline{src_ld_inst} и \lstinline{src_cb_name} сформировать
+    \lstinline{goCbRef}.
+
+    \item \label{i:algo1:formElem} Сформировать указатель на элемент типа \lstinline{gooseConfigInfo_t} и обнулить его.
+    \item Произвести поиск сформированного \lstinline{goCbRef} в локальных списках модуля с помощью вызова подпрограммы. Если такой был найден, то перейти к шагу~\ref{i:algo1:else}.
+
+    \item \label{i:algo1:malloc} Выделить память под новый элемент локального списка и присвоить указателю на элемент структуры, созданному в шаге~\ref{i:algo1:formElem}.
+    \item Выполнить проверку на выделение памяти. Если память не удалось выделить, перейти к шагу~\ref{i:algo1:noMalloc}.
+    \item \label{i:algo1:else} Присвоить указатель на найденный элемент указателю на элемент структуры, созданному в шаге~\ref{i:algo1:formElem}.
+
+    % save source to a temporary buffer temp_buffer
+    \item Присвоить локальной переменной значение индекса начала слова \lstinline{source}.
+    \item Выполнить проверку на содержание \lstinline{source}. Если слово пустое, то перейти к шагу~\ref{i:algo1:sourceEmpty}.
+    \item Переписать значение \lstinline{source} из строки \lstinline{inAddr} в локальный буфер, который был создан в шаге~\ref{i:algo1:createBufs}.
+    \item Добавить в конец буфера из предыдущего шага символ <<\textbackslash 0>>.
+    \item На основе полученного \lstinline{source} с помощью вызова подпрограммы сформировать идентификатор интерфейса.
+    \item Выполнить проверку идентификатора интерфейса. Если он равен \lstinline{NET_ETH_UNKNOWN},
+    перейти к шагу~\ref{i:algo1:ethUnknown}.
+    \item Выполнить проверку, что присвоенный указатель в шаге~\ref{i:algo1:else} не нулевой. Если нулевой, то перейти к шагу~\ref{i:algo1:pointerNull}.
+    \item Получить поле элемента локального списка структуры и сравнить его с полученным идентификатором интерфейса, если они не равны, то перейти к шагу~\ref{i:algo1:mismatchSourse}.
+    \item \label{i:algo1:pointerNull} Записать полученный идентификатор интерфейса в элемент списка.
+
+    % save mac to a temporary buffer temp_buffer
+    \item Присвоить локальной переменной значение индекса начала слова <<mac>>.
+    \item Выполнить проверку на содержание \lstinline{mac}. Если слово пустое, то перейти к шагу~\ref{i:algo1:macEmpty}.
+
+    \item Если символы в поле \lstinline{mac} соответствуют формату MAC-адреса, то сохранить его в локальный буфер.
+    \item Добавить в конец символ <<\textbackslash 0>>.
+    \item Выполнить проверку полученного адреса на его размер. Если он не соответствует размеру \lstinline{CFG_MAC_ADDR_SIZE_IN_HEX_NUM}, то перейти к шагу~\ref{i:algo1:errorMacSize}.
+    \item Выделить локальный массив размера \lstinline{MAC_ADDR_SIZE}.
+    \item Конвертировать полученный MAC-адрес в подходящий формат из строки с помощью вызова подпрограммы.
+    \item Проверить результат, полученный в предыдущем шаге. Если произошла ошибка преобразования, перейти к шагу~\ref{i:algo1:errorMacConvert}.
+    \item Выполнить проверку, что указатель в шаге~\ref{i:algo1:else} не нулевой. Если нулевой, то перейти к шагу~\ref{i:algo1:pointerNull1}.
+    \item Сравнить полученный MAC-адрес и поле элемента локального списка. Если значения не равны, то
+    перейти к шагу~\ref{i:algo1:mismatchMac}.
+    \item \label{i:algo1:pointerNull1} Переписать проверенный MAC-адрес в поле адреса назначения в элемент локального списка модуля приема и обработки GOOSE-пакета.
+
+    % save goId to a temporary buffer temp_buffer
+    \item Переписать параметр \lstinline{goId} из входной строки в поле элемента локального списка.
+
+    % save confRev to a temporary buffer temp_buffer
+    \item Присвоить локальной переменной значение индекса начала слова <<confRev>>.
+    \item Выполнить проверку на содержание \lstinline{confRev}. Если слово пустое, то перейти к шагу~\ref{i:algo1:confRevEmpty}.
+    \item Переписать в локальный буфер слово \lstinline{confRev}, если там соответствующие символы. Если попался хоть один символ, который не соответствует шаблону, то перейти к шагу~\ref{i:algo1:confRevError}.
+    \item Добавить в конец строки из предыдущего шага символ <<\textbackslash 0>>.
+    \item Выполнить преобразование слова \lstinline{confRev} из строкового представление в числовое.
+    \item Сравнить результат преобразования со значением \lstinline{UINT_MAX}. Если \lstinline{confRev} больше \lstinline{UINT_MAX}, то перейти к шагу~\ref{i:algo1:confRevOverflow}.
+    \item Выполнить проверку, что указатель в шаге~\ref{i:algo1:else} не нулевой. Если нулевой, то перейти к шагу~\ref{i:algo1:pointerNull2}.
+    \item Сравнить полученный \lstinline{confRev} и поле элемента локального списка. Если значения не равны, то перейти к шагу~\ref{i:algo1:mismatchConfRev}.
+    \item \label{i:algo1:pointerNull2} Переписать проверенный \lstinline{confRev} в поле элемента локального списка модуля приема и обработки GOOSE-пакета.
+
+    % save appId to a temporary buffer temp_buffer
+    \item Присвоить локальной переменной значение индекса начала слова \lstinline{appId}.
+    \item Выполнить проверку на содержание \lstinline{appId}. Если слово пустое, то перейти к шагу~\ref{i:algo1:appIdEmpty}.
+    \item Переписать в локальный буфер слово \lstinline{appId}, если там соответствующие символы. Если попался хоть один символ, который не соответствует шаблону, то перейти к шагу~\ref{i:algo1:appIdError}.
+    \item Добавить в конец строки из предыдущего шага символ <<\textbackslash 0>>.
+    \item Выполнить преобразование слова \lstinline{appId} из строкового представление в числовое.
+    \item Сравнить результат преобразования со значением \lstinline{CFG_MAX_APPID_VAL}. Если \lstinline{appId} больше \lstinline{CFG_MAX_APPID_VAL}, то перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item Выполнить проверку, что указатель в шаге~\ref{i:algo1:else} не нулевой. Если нулевой, то перейти к шагу~\ref{i:algo1:pointerNull3}.
+    \item Сравнить полученный \lstinline{appId} и поле элемента локального списка. Если значения не равны, то перейти к шагу~\ref{i:algo1:mismatchAppId}.
+    \item \label{i:algo1:pointerNull3} Переписать проверенный \lstinline{appId} в поле элемента локального списка модуля приема и обработки GOOSE-пакета.
+    \item Вызвать подпрограмму, которая разложит vars в локальные структуры. Данный алгоритм будет отдельно рассмотрен в подразделе~\ref{ssec:algo:varsInAddr}.
+    \item Проверить результат разложения. Если возникла ошибка, то перейти к шагу~\ref{i:algo1:errorVars}.
+    \item Записать в элемент локального списка количество vars.
+
+    \item Выполнить проверку, что указатель в шаге~\ref{i:algo1:else} не нулевой. Если не нулевой, то перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item Вернуть указатель на заполненный элемент локального списка со всеми полезными данными и перейти к шагу~\ref{i:algo1:end}.
+
+    \item \label{i:algo1:invalidSid} Вывести сообщение \texttt{Некорректный \cid-файл} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:errorStringFormat} Вывести сообщение \texttt{Ошибка в формате строки} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:notSource} Вывести сообщение \texttt{Слова <<source>> нет в строке входных данных. Некорректный \cid-файл} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:notMac} Вывести сообщение \texttt{Слова <<mac>> нет в строке входных данных. Некорректный \cid-файл} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:notGoId} Вывести сообщение \texttt{Слова <<goId>> нет в строке входных данных. Некорректный \cid-файл} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:notAppId} Вывести сообщение \texttt{Слова <<appId>> нет в строке входных данных. Некорректный \cid-файл} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:notConfRev} Вывести сообщение \texttt{Слова <<confRev>> нет в строке входных данных. Некорректный \cid-файл} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:notVars} Вывести сообщение \texttt{Слова <<vars>> нет в строке входных данных. Некорректный \cid-файл} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+
+    \item \label{i:algo1:errorStringFormatSource} Вывести сообщение \texttt{Ошибка в формате строки. Нет символа <<;>> в конце слова <<source>>} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:errorStringFormatMac} Вывести сообщение \texttt{Ошибка в формате строки. Нет символа
+    <<;>> в конце слова <<mac>>} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:errorStringFormatGoId} Вывести сообщение \texttt{Ошибка в формате строки. Нет символа
+    <<;>> в конце слова <<goId>>} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:errorStringFormatAppId} Вывести сообщение \texttt{Ошибка в формате строки. Нет символа <<;>> в конце слова <<appId>>} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:errorStringFormatConfRev} Вывести сообщение \texttt{Ошибка в формате строки. Нет символа <<;>> в конце слова <<confRev>>} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+
+    \item \label{i:algo1:errorStringFormatVars} Вывести сообщение \texttt{Ошибка в формате строки. Нет символа
+    <<;>> в конце слова <<vars>>} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+
+    \item \label{i:algo1:goIdEmpty} Вывести сообщение \texttt{Ошибка GoId. GoId пуст} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:noMalloc}. Вывести сообщение \texttt{Ошибка выделения памяти} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:sourceEmpty} Вывести сообщение \texttt{Ошибка source. Source пуст} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:ethUnknown} Вывести сообщение \texttt{Ошибка source: неизвестный тип} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:mismatchSourse} Вывести сообщение \texttt{Несоответствие значений source. Ошибка} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:macEmpty} Вывести сообщение \texttt{Ошибка строки <<mac>>. MAC-адрес пуст} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:errorMacSize} Вывести сообщение \texttt{Ошибка размер MAC-адреса или некорректные символы в адресе} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:errorMacConvert} Вывести сообщение \texttt{Ошибка MAC-адреса или его размера} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:mismatchMac} Вывести сообщение \texttt{Несоответствие адреса назначения. Ошибка} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:confRevEmpty} Вывести сообщение \texttt{Ошибка confRev. ConfRev пуст} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:confRevError} Вывести сообщение \texttt{Ошибка confRev} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:confRevOverflow} Вывести сообщение \texttt{Переполнение confRev} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:mismatchConfRev} Вывести сообщение \texttt{Несоответствие confRev. Ошибка} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:appIdEmpty} Вывести сообщение \texttt{Ошибка appId. AppId пуст} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:appIdError} Вывести сообщение \texttt{Ошибка appId} и перейти к шагу~\ref{i:algo1:memoryAllocated}.
+    \item \label{i:algo1:mismatchAppId} Вывести сообщение \texttt{Несоответствие appId. Ошибка} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item \label{i:algo1:errorVars} Вывести сообщение \texttt{Ошибка разбора vars} и перейти к шагу~\ref{i:algo1:endAlgorithm}.
+
+    \item \label{i:algo1:memoryAllocated} Выполнить проверку, что память в шаге~\ref{i:algo1:malloc} была выделена. Если указатель пустой, перейти к шагу~\ref{i:algo1:endAlgorithm}.
+    \item Выполнить очистку выделенных в шаге~\ref{i:algo1:malloc} ресурсов.
+
+    \item \label{i:algo1:endAlgorithm} Вернуть \lstinline{NULL}.
+    \item \label{i:algo1:end} Конец алгоритма.
+\end{enumerate_step}
+
+\subsection{Алгоритм разбора блока vars строки inAddr \cid-файла}
+\label{ssec:algo:varsInAddr}
+
+В строке inAddr находится большое количество параметров, разбор и преобразование которых было рассмотрено в предыдущем алгоритме. Однако есть такие сложные параметры, которые требуют отдельного внимания. К примеру, параметр vars. В одной строке их может быть несколько. Так как алгоритм разбора vars занимает одно из центральных мест в модуле приема и обработки GOOSE-пакетов, его необходимо рассмотреть.
+
+Распишем данный алгоритм по шагам:
+\begin{enumerate_step}
+    \item Начало алгоритма.
+    \item \label{i:algo2:createBuf} Выделить локальные буферы \lstinline{cdc_type}, \lstinline{prefix}, \lstinline{da_name}, \lstinline{res_buf}, \lstinline{nesting} типа \lstinline{char} размера \lstinline{CFG_MAX_BUF_SIZE}.
+    \item \label{i:algo2:createVariables} Создать вспомогательные переменные для работы алгоритма.
+    \item Проверить, что строка для разбора начинается с символа <<\{>>. При ошибке
+    перейти к шагу~\ref{i:algo2:nestingError}.
+    \item \label{i:algo2:for} Получить элемент строки.
+    \item Выделить память под новый элемент списка.
+    \item Выполнить проверку на выделенную память. Если память не выделилась, перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item Выполнить инициализацию вспомогательных переменных.
+    \item Проверить, что текущий элемент строки для разбора соответствует <<;>>. В случае успеха перейти к шагу~\ref{i:algo2:endOfVars}.
+    \item Вывести сообщение \texttt{Конец vars}.
+    \item Вызвать подпрограмму очистки информации о vars, которая была записана, и перейти к шагу~\ref{i:algo2:lastOper}.
+
+    \item \label{i:algo2:endOfVars} Выполнить проверку, что текущий элемент строки соответствует символу <<\{>>, при ошибочном варианте перейти к шагу~\ref{i:algo2:GSearch}.
+    \item Увеличить счетчик открывающихся скобок \lstinline{open}, который был объявлен и проинициализирован в шаге~\ref{i:algo2:createVariables}.
+    \item Вызывать подпрограмму очистки информации о vars, которая была записана, и перейти к шагу~\ref{i:algo2:for}.
+
+    \item \label{i:algo2:GSearch} Выполнить проверку, что текущий элемент строки не соответствует символу <<G>>. При успешном результате перейти к шагу~\ref{i:algo2:notG}.
+    \item Обнулить вспомогательную переменную \lstinline{j}, которая была объявлена в шаге~\ref{i:algo2:createVariables}.
+    \item Увеличить счетчик движения по строке.
+    % write cdc_type in temp buffer
+    \item \label{i:algo2:StartLoop1} Проверить, является ли текущий символ буквой и не последним в строке. Если ошибка, то перейти к шагу~\ref{i:algo2:AddLastSymbol1}.
+    \item Произвести переписывание значения символа в локальный буфер \lstinline{cdc_type}, который был выделен в шаге~\ref{i:algo2:createBuf}, перейти к шагу~\ref{i:algo2:StartLoop1}.
+    \item \label{i:algo2:AddLastSymbol1} Добавить в конец символ <<\textbackslash 0>>.
+    % checking if the prefix is a number
+    \item Выполнить проверку префикса во входной строке. Если символ не является числом, то перейти к шагу~\ref{i:algo2:errorVarsFormat}.
+    \item Обнулить вспомогательную переменную \lstinline{j}, которая была объявлена в шаге~\ref{i:algo2:createVariables}.
+    % saving prefix to the buffer
+    \item \label{i:algo2:StartLoop2} Проверить, что текущий символ не является символом <<;>>,
+    <<.>> и не последний в строке. Если ошибка, то перейти к шагу~\ref{i:algo2:AddLastSymbol2}.
+    \item Произвести переписывание значения символа в локальный буфер \lstinline{prefix}, который был выделен в шаге~\ref{i:algo2:createBuf}, перейти к шагу~\ref{i:algo2:StartLoop2}.
+    \item \label{i:algo2:AddLastSymbol2} Добавляем в конец символ <<\textbackslash 0>>.
+    \item Увеличить счетчик движения по строке.
+    % checking that the first element of the da_name is a letter
+    \item Выполнить проверку, что первый элемент параметра \lstinline{da_name} во входной строку является буквой. При ошибке перейти к шагу~\ref{i:algo2:errorVarsType}.
+    \item Обнулить вспомогательную переменную \lstinline{j}, которая была объявлена в шаге~\ref{i:algo2:createVariables}.
+
+    \item \label{i:algo2:StartLoop3} Проверить, что текущий символ не является символом <<;>> и не последний в строке. Если ошибка, то перейти к шагу~\ref{i:algo2:lastLetter1}.
+    \item Выполнить проверку, что текущий символ является буквой. Если ошибка, то перейти к шагу~\ref{i:algo2:lastLetter}.
+    \item Произвести переписывание символа в локальный буфер \lstinline{da_name}, который был выделен в шаге~\ref{i:algo2:createBuf}, перейти к шагу~\ref{i:algo2:StartLoop3}.
+    \item \label{i:algo2:lastLetter} Вывести сообщение \texttt{Последний символ}.
+    \item \label{i:algo2:lastLetter1} Добавить в конец буфера \lstinline{da_name} символ <<\textbackslash 0>>.
+    % checking that the next character is required <<,'
+    \item Выполнить проверку, что текущий элемент строки соответствует не символу <<,>>. При успешном результате перейти к шагу~\ref{i:algo2:invalidVarsFormat}.
+    \item Увеличить счетчик движения по строке.
+    % checking that the next character is required <<\{'
+    \item Проверить, что текущий элемент строки не соответствует символу <<\{>>. В случае успеха перейти к шагу~\ref{i:algo2:nestingError1}.
+    % counting the number <<\{'
+    \item \label{i:algo2:StartLoop4} Проверить, что текущий символ является символом <<\}>>. Если ошибка, то перейти к шагу~\ref{i:algo2:AddLastSymbol4}.
+    \item Выполнить увеличение счетчика движения по строке и счетчик открывающихся скобок. Перейти к шагу~\ref{i:algo2:StartLoop4}.
+    % checking that nestings are numbers
+    \item \label{i:algo2:AddLastSymbol4} Выполнить проверку, что уровни вложенности являются числами. При ошибке перейти к шагу~\ref{i:algo2:nestingError2}.
+    \item Выполнить проверку, что текущий элемент строки равен символу <<\}>>. При успешном сравнении перейти к шагу~\ref{i:algo2:notNesting}.
+    \item Обнулить вспомогательную переменную \lstinline{p}, которая была объявлена в шаге~\ref{i:algo2:createVariables}.
+
+    \item \label{i:algo2:begin1} Проверить, что текущий символ не является символом <<\}>>, <<;>> и не последний в строке. Если ошибка, то перейти к шагу~\ref{i:algo2:AddLastSymbol5}.
+    \item Выполнить проверку, что текущий символ является цифрой. Если ошибка, то перейти к шагу~\ref{i:algo2:nestingError3}.
+    \item Выполнить проверку, что текущий элемент строки соответствует символу <<,>>. При ошибочном результате перейти к шагу~\ref{i:algo2:next}.
+    \item Выполнить проверку на то, что следующий символ входной строки является последним и соответствует числу. При ошибке перейти к шагу~\ref{i:algo2:nestingError4}.
+    \item Увеличить общий счетчик скобок, который был объявлен и проинициализирован в шаге~\ref{i:algo2:createVariables}.
+    \item Записать символ <<\textbackslash 0>> по индексу \lstinline{p}.
+    \item \label{i:algo2:subProg} Вызвать подпрограмму добавления уровней вложенности в список.
+    \item Проверить результат подпрограммы шага~\ref{i:algo2:subProg}. Если ошибка, то перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item Обнулить переменную <<p>>, увеличиваем счетчик движения по строке и перейти к шагу~\ref{i:algo2:begin1}.
+    \item \label{i:algo2:next} Выполнить перезапись символа уровня вложенности в массив \lstinline{nesting} и перейти к шагу~\ref{i:algo2:begin1}.
+    \item \label{i:algo2:AddLastSymbol5} Записать в конец массива символ <<\textbackslash 0>>.
+    \item \label{i:algo2:subProg1} Вызвать подпрограмму добавления уровней вложенности в список.
+    \item Проверить результат подпрограммы шага~\ref{i:algo2:subProg1}. Если ошибка, то перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    % checking that there is a <<}>> bracket
+    \item Выполнить проверку, что текущий элемент строки соответствует не символу <<\}>>. При успешном результате перейти к шагу~\ref{i:algo2:inc}.
+    \item \label{i:algo2:inc} Увеличить общий счетчик скобок и счетчик количества закрывающихся скобок \lstinline{close}, который был объявлен в шаге~\ref{i:algo2:createVariables}.
+    % counting the number of  <<}>> brackets
+    \item \label{i:algo2:Loop6} Проверить, что текущий символ является символом <<\}>>, не является символом <<;>> и не последний в строке. Если ошибка, то перейти к шагу~\ref{i:algo2:AddLastSymbol6}.
+    \item Увеличить счетчик количества закрывающихся скобок \lstinline{close}, который был объявлен в шаге~\ref{i:algo2:createVariables}, и счетчик движения по строке. Перейти к шагу~\ref{i:algo2:Loop6}.
+
+    \item \label{i:algo2:AddLastSymbol6} Выполнить проверку, что текущий элемент не является символом <<\{>> и
+    <<;>>. При успешном сравнении перейти к шагу~\ref{i:algo2:nestingError5}.
+    \item Уменьшить счетчик прохода по входной строке и увеличить счетчик уровней вложенности, который представлен глобальной переменной \lstinline{gooseVarsCount}.
+    \item Вызвать подпрограмму формирования строки для получения индекса переменной из общей модели данных для записи полученных значений.
+    \item Проверить результат подпрограммы предыдущего шага. Если ошибка, то перейти к шагу~\ref{i:algo2:errorIdx}.
+    \item Вызвать подпрограмму получения индекса переменной из общей модели данных для записи значений.
+    \item Проверить результат подпрограммы предыдущего шага. Если ошибка, то перейти к шагу~\ref{i:algo2:errorIdx1}.
+    \item Записать полученные данные в модуль \moduleDataStoring.
+    \item Выполнить проверку на существование локального списка. При ошибочной проверке перейти к шагу~\ref{i:algo2:continue}.
+    \item Добавить сформированный элемент в список. Обнулить необходимые поля структуры, которая является элементом списка.
+    \item \label{i:algo2:continue} Присвоить голове локального списка новый указатель и перейти к шагу~\ref{i:algo2:for}.
+    \item \label{i:algo2:lastOper} Выполнить проверку на соответствие счетчика открывающихся скобок и счетчика закрывающихся скобок. В случае ошибки перейти к шагу~\ref{i:algo2:lastError}.
+    \item Вернуть true и перейти к шагу~\ref{i:algo2:end}.
+    \item \label{i:algo2:nestingError} Вывести сообщение \texttt{Ошибка уровней вложенности. Пропущен символ <<\{>>} и перейти к шагу~\ref{i:algo2:endAlgorithm}.
+    \item \label{i:algo2:notG} Вывести сообщение \texttt{Текущий символ не является символом <<G>>. Ошибка} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:errorVarsFormat} Вывести сообщение \texttt{Ошибка vars формата} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:notCorrectSymbol} Вывести сообщение \texttt{Текущий символ не является символом <<.>>} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:errorVarsType} Вывести сообщение \texttt{Ошибка типа vars} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:invalidVarsFormat} Вывести сообщение \texttt{Некорректный формат vars. Ожидался символ <<,>>} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:nestingError1} Вывести сообщение \texttt{Ошибка уровней вложенности. Ожидается символ <<\{>>} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:nestingError2} Вывести сообщение \texttt{Ошибка уровней вложенности} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:notNesting} Вывести сообщение \texttt{Уровни вложенности отсутствуют} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:nestingError3} Вывести сообщение \texttt{Ошибка в символе уровня вложенности} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:nestingError4} Вывести сообщение \texttt{Ошибка в формате уровня вложенности} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:nestingError5} Вывести сообщение \texttt{Ошибка в концовке формата уровня вложенности} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:errorIdx} Вывести сообщение \texttt{Ошибка получения строки формирования индекса} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:errorIdx1} Вывести сообщение \texttt{Ошибка получения индекса} и перейти к шагу~\ref{i:algo2:freeConfigResources}.
+    \item \label{i:algo2:lastError} Вывести сообщение \texttt{Ошибка входной строки. Несоответствие количества открывающих и закрывающих скобок} и перейти к шагу~\ref{i:algo2:endAlgorithm}.
+
+    \item \label{i:algo2:freeConfigResources} Произвести очистку всех локальных списков.
+    \item \label{i:algo2:endAlgorithm} Вернуть false.
+    \item \label{i:algo2:end} Конец алгоритма.
+\end{enumerate_step}
+
+\subsection{Алгоритм приема и обработки GOOSE-пакета}
+
+Самым важным алгоритмом системы является алгоритм приема и обработки GOOSE-пакета. В нем осуществляется ожидание пакета, его прием, всевозможные проверки, вызов подпрограммы обработки и повторение вышеописанных действий.
+
+Распишем данный алгоритм по шагам:
+\begin{enumerate_step}
+    \item Начало алгоритма.
+    \item \label{i:pgp:createPointerStr} Создать указатель на структуру внутренних параметров модуля.
+    \item \label{i:pgp:createSocket} Вызвать подпрограмму создания сокета для организации приема GOOSE-пакета.
+    \item Выполнить проверку результата функции создания сокета. Если он некорректный, то перейти к шагу~\ref{i:pgp:socketHandleInvalid}.
+    \item Переписать в структуру внутренних параметров полученный и проверенный дескриптор сокета.
+    \item Выполнить получение индекса физического интерфейса из структуры внутренних параметров модуля.
+    \item Вызвать подпрограмму для связывания сокета с физическим интерфейсом, индекс которого был получен в предыдущем шаге.
+    \item Сравнить результат функции связывания со значением \lstinline{NET_OK}. Если они не равны, перейти к шагу~\ref{i:pgp:netSetSockOptError}.
+    \item Вызвать подпрограмму ожидания необходимости принимать производить прием пакетов.
+    \item Проинициализировать вспомогательные переменные для дальнейшей работы.
+    \item \label{i:pgp:processGoosePacket} Ожидать получение GOOSE-пакета.
+    \item Выполнить проверку на флаг остановки работы модуля. Если флаг установлен, то перейти к шагу~\ref{i:pgp:socketclose}.
+    \item Вызвать подпрограмму получения GOOSE-пакета.
+    \item Проверить количество полученных байт. Если оно не меньше нуля, перейти к шагу~\ref{i:pgp:netRecvNcOk}.
+    \item Вывести сообщение \texttt{Ошибка функции netRecvNc}.
+    \item Ожидать следующего такта системы и выполнить переход к шагу~\ref{i:pgp:processGoosePacket}.
+    \item \label{i:pgp:netRecvNcOk} Вызвать подпрограмму обработки полученного GOOSE-пакета.
+    \item Выполнить проверку результата обработки. Если он успешный, то перейти к шагу~\ref{i:pgp:parseOk}.
+    \item Вывести сообщение \texttt{Ошибка разбора GOOSE-пакета}.
+    \item \label{i:pgp:parseOk} Выполнить освобождение полученного пакета и перейти к шагу~\ref{i:pgp:processGoosePacket}.
+
+    \item \label{i:pgp:socketHandleInvalid} Вывести сообщение \texttt{Дескриптор сокета некорректный} и перейти к шагу~\ref{i:pgp:idTaskNull}.
+    \item \label{i:pgp:netSetSockOptError} Вывести сообщение \texttt{Ошибка функции netSetSockOpt}.
+    \item \label{i:pgp:socketclose} Выполнить закрытие и удаление созданного в шаге~\ref{i:pgp:createSocket} сокета.
+
+    \item \label{i:pgp:idTaskNull} В идентификатор задачи записать NULL.
+    \item \label{i:pgp:end} Конец алгоритма.
+\end{enumerate_step}

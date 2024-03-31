@@ -1,0 +1,529 @@
+\section{\texorpdfstring{\MakeUppercase \economicalPartName}{\economicalPartName}}
+
+% Begin Calculations
+
+\subsection{Краткая характеристика программного продукта}
+
+Разработанный дипломный проект является модулем приема и обработки
+GOOSE-пакетов решает задачу обмена информацией между устройствами релейной защиты
+и автоматики в цифровом виде на различных энергообъектах. Областью применения
+являются системы связи внутри подстанций.
+
+Продукт имеет следующие функции:
+\begin{itemize}
+  \item прием GOOSE-пакетов;
+  \item обработка GOOSE-пакетов;
+  \item использование принятых и обработанных данных.
+\end{itemize}
+
+Разработчиком продукта является специализированная аутсорсинговая IT-организация
+ООО~<<АКСОНИМ>>, занимающаяся разработкой программных и аппаратных средств
+по индивидуальным заказам, разработкой встроенных систем, электроники,
+цифровых устройств. Организация-заказчик -- АО~<<РАДИУС Автоматика>> --
+российское научно-производственное предприятие, реализующее полный цикл работ
+от научных изысканий до серийного производства всего комплекса оборудования
+релейной защиты и автоматики для сетей от 0,4~кВ до 220~кВ, а также средств испытания
+и диагностики оборудования и линий электропередачи.
+
+Стандарт \iecStdRef81, одним из трех основных протоколов которого является GOOSE,
+-- новая коммуникационная технология. На сегодняшний день она повсеместно внедрена
+за рубежом на новейших энергообъектах, а также находит применение в странах
+постсоветского пространства. Эксперты в области радиоэлектроники высказываются
+о стандарте, в частности о протоколе GOOSE, как о технологии будущего,
+которая способна решить текущие проблемы разработок. Все благодаря надежности,
+чувствительности, селективности и быстродействию протокола. Несмотря на то, что
+протокол GOOSE считается одним из самых сложных протоколов передачи данных,
+он выигрывает в скорости передачи в сравнении с другими протоколами схожего
+назначения, к примеру, Modbus.
+
+Исходя из всего вышесказанного можно предположить, что данный продукт выгодно
+разрабатывать несмотря на сложность и новизну протокола GOOSE. В перспективе
+разработанный продукт можно будет неоднократно использовать для устройств релейной
+защиты автоматики.
+
+\subsection{Расчет инвестиций в разработку программного средства}
+
+\subsubsection{Расчет затрат на основную заработную плату разработчиков}
+
+Затраты на разработку высчитываются исходя из количества исполнителей, объема их
+работ, а также размера премии. Расчет затрат на основную заработную плату можно
+произвести по формуле:
+
+\begin{equation}
+  \label{eq:econ:Zo}
+  \text{З}_\text{о} = \text{К}_\text{пр} \cdot
+    \sum_{i = 1}^{n} \text{З}_{\text{ч}i} \cdot t_i,
+\end{equation}
+\begin{explanationx}
+  \item[где] $ \text{К}_\text{пр} $ -- коэффициент премий;
+  \item $ n $ -- количество категорий исполнителей, занятых разработкой
+  программного средства;
+  \item $ \text{З}_{\text{ч}i} $ -- часовая заработная плата исполнителя $ i $-й категории, \rub;
+  \item $ t_i $ -- трудоемкость работ исполнителя $ i $-й категории, ч.
+\end{explanationx}
+
+В связи со спецификой поставленной задачи разработкой будут заниматься
+инженер-программист, задачей которого будет создание программного обеспечения,
+а также инженер-тестировщик, который будет выявлять ошибки и неисправности
+программного обеспечения в ходе тестирования.
+
+Данные о заработной плате команды разработчиков предоставлены компанией на
+\econCalcDate\ Часовая заработная плата определяется путем деления месячной
+заработной платы на количество рабочих часов в месяце.
+
+\FPeval{\valPremiaPercent}{50}
+\FPeval{\valKpr}{round(1 + \valPremiaPercent / 100, \configRoundSigns)}
+\FPeval{\valtMonth}{168}
+
+Количество рабочих часов в месяце принято равным \num\valtMonth\ часам. Размер премии
+составляет $ \num\valPremiaPercent \ \% $ от размера основной заработной платы.
+Расчет затрат
+на основную заработную плату команды разработчиков представлен
+в таблице~\ref{table:econ:calc_zar_plata}.
+
+\FPeval{\valZchProger}{round(915, \configRoundSigns)}
+\FPeval{\valHourProger}{clip(\valZchProger / \valtMonth)}
+\FPeval{\valHourProgerPrint}{round(\valHourProger, \configRoundSigns)}
+\FPeval{\valtProger}{168}
+\FPeval{\valTotalProger}{round(\valHourProger * \valtProger, \configRoundSigns)}
+
+\FPeval{\valZchTester}{round(855, \configRoundSigns)}
+\FPeval{\valHourTester}{clip(\valZchTester / \valtMonth)}
+\FPeval{\valHourTesterPrint}{round(\valHourTester, \configRoundSigns)}
+\FPeval{\valtTester}{168}
+\FPeval{\valTotalTester}{round(\valHourTester * \valtTester, \configRoundSigns)}
+
+\FPeval{\valTotal}{round(\valTotalProger + \valTotalTester, \configRoundSigns)}
+\FPeval{\valPremiaSum}{round(\valTotal * \valPremiaPercent / 100, \configRoundSigns)}
+\FPeval{\valZo}{round(\valTotal + \valPremiaSum, \configRoundSigns)}
+
+\begin{table}[ht]
+  \caption{Расчет затрат на основную заработную плату разработчиков}
+  \label{table:econ:calc_zar_plata}
+  \begin{tabular}{| >{\raggedright}m{0.20\textwidth}
+                  | >{\centering}m{0.18\textwidth}
+                  | >{\centering}m{0.18\textwidth}
+                  | >{\centering}m{0.18\textwidth}
+                  | >{\centering\arraybackslash}m{0.127\textwidth}|}
+      \hline
+      \centering Категория исполнителя
+      & Месячная заработная плата, \rub
+      & Часовая заработная плата, \rub
+      & Трудоемкость работ, ч
+      & Итого, \rub \\
+
+      \hline
+      Инженер-программист
+      & \num\valZchProger
+      & \num\valHourProgerPrint
+      & \num\valtProger
+      & \num\valTotalProger
+      \\
+
+      \hline
+      Инженер-тестировщик
+      & \num\valZchTester
+      & \num\valHourTesterPrint
+      & \num\valtTester
+      & \num\valTotalTester
+      \\
+
+      \hline
+      \multicolumn{4}{|l|}{Итого}
+      & \num\valTotal
+      \\
+
+      \hline
+      \multicolumn{4}{|l|}{Премия ($ \num\valPremiaPercent \ \% $)}
+      & \num\valPremiaSum
+      \\
+
+      \hline
+      \multicolumn{4}{|l|}{Всего затраты на основную заработную плату разработчиков}
+      & \num\valZo
+      \\
+
+      \hline
+  \end{tabular}
+\end{table}
+
+\fixTableSectionSpace
+
+\subsubsection{Расчет затрат на дополнительную заработную плату разработчиков}
+
+\FPeval{\valNdPercent}{15}
+
+Для расчета затрат на дополнительную заработную плату разработчиков воспользуемся
+следующей формулой:
+
+\begin{equation}
+  \label{eq:econ:Zd}
+  \text{З}_\text{д} = \frac{\text{З}_\text{о} \cdot \text{Н}_\text{д}}
+    {100},
+\end{equation}
+\begin{explanationx}
+  \item[где] $ \text{Н}_\text{д} $ -- норматив дополнительной заработной платы.
+\end{explanationx}
+
+Будем считать, что значение норматива дополнительной заработной платы составляет
+$ \num\valNdPercent \ \% $.
+
+\FPeval{\valZd}{round(\valZo * \valNdPercent / 100, \configRoundSigns)}
+
+\subsubsection{Расчет отчислений на социальные нужды}
+
+\FPeval{\valNSotsPercent}{34.6}
+
+Размер отчислений на социальные нужды определяется ставкой отчислений, которая
+в соответствии с действующим законодательством по состоянию на \econCalcDate\
+составляет $ \num\valNSotsPercent \ \% $. Найдем размер отчислений по формуле:
+
+\begin{equation}
+  \label{eq:econ:RSots}
+  \text{Р}_\text{соц} = \frac{(\text{З}_\text{о} + \text{З}_\text{д}) \cdot \text{Н}_\text{соц}}
+    {100},
+\end{equation}
+\begin{explanationx}
+  \item[где] $ \text{Н}_\text{соц} $ -- ставка отчислений на социальные нужды.
+\end{explanationx}
+
+\FPeval{\valRSots}{round((\valZo + \valZd) * \valNSotsPercent / 100, \configRoundSigns)}
+
+\subsubsection{Расчет прочих расходов}
+
+\FPeval{\valNPrPercent}{32}
+
+Прочие расходы рассчитываются с учетом норматива прочих расходов. Примем значение
+норматива равным $ \num\valNPrPercent \ \% $. С учетом этого рассчитаем прочие расходы
+по формуле:
+
+\begin{equation}
+  \label{eq:econ:RPr}
+  \text{Р}_\text{пр} = \frac{\text{З}_\text{о} \cdot \text{Н}_\text{пр}}
+    {100},
+\end{equation}
+\begin{explanationx}
+  \item[где] $ \text{Н}_\text{пр} $ -- норматив прочих расходов.
+\end{explanationx}
+
+\FPeval{\valRPr}{round(\valZo * \valNPrPercent / 100, \configRoundSigns)}
+
+\subsubsection{Расчет общей суммы затрат}
+
+Определим общую сумму затрат как сумму ранее вычисленных расходов: на основную
+заработную плату, дополнительную заработную плату, отчислений на социальные нужды и
+прочие расходы. Значение определяется по формуле:
+
+\begin{equation}
+  \label{eq:econ:Zr}
+  \text{З}_\text{р} = \text{З}_\text{о} + \text{З}_\text{д}
+    + \text{Р}_\text{соц} + \text{Р}_\text{пр}.
+\end{equation}
+
+\FPeval{\valZr}{round(\valZo + \valZd + \valRSots + \valRPr, \configRoundSigns)}
+
+\subsubsection{Расчет плановой прибыли}
+
+\FPeval{\valRPsPercent}{37}
+
+Плановая прибыль рассчитывается как процент от общей суммы затрат, называемый
+уровнем рентабельности. Определим уровень рентабельности
+в $ \num\valRPsPercent \ \% $. Зная это значение, можно произвести расчет плановой
+прибыли по формуле:
+
+\begin{equation}
+  \label{eq:econ:PPs}
+  \text{П}_\text{пс} = \frac{\text{З}_\text{р} \cdot \text{Р}_\text{пс}}
+    {100},
+\end{equation}
+\begin{explanationx}
+  \item[где] $ \text{Р}_\text{пс} $ -- рентабельность затрат на разработку программного средства.
+\end{explanationx}
+
+\FPeval{\valPPs}{round(\valZr * \valRPsPercent / 100, \configRoundSigns)}
+
+\subsubsection{Расчет отпускной цены программного средства}
+
+Отпускная цена с учетом налога на добавочную стоимость соответствует размеру
+инвестиций, вкладываемых заказчиком для разработки программного средства.
+
+Определяется отпускная цена как сумма расходов и плановой прибыли.
+Найти значение можно по формуле:
+
+\begin{equation}
+  \label{eq:econ:TsPs}
+  \text{Ц}_\text{пс} = \text{З}_\text{р} + \text{П}_\text{пс}.
+\end{equation}
+
+\FPeval{\valTsPs}{round(\valZr + \valPPs, \configRoundSigns)}
+
+С использованием ранее приведенных формул найдем значение затрат, определим
+плановую прибыль и рассчитаем величину отпускной цены
+в таблице~\ref{table:econ:calc_invest_development}.
+
+\begin{table}[ht]
+  \caption{Расчет инвестиций в разработку программного средства}
+  \label{table:econ:calc_invest_development}
+  \begin{tabular}{| >{\raggedright}m{0.41\textwidth}
+                  | >{\centering}m{0.35\textwidth}
+                  | >{\centering\arraybackslash}m{0.16\textwidth}|}
+      \hline
+      \centering Наименование статьи затрат
+      & Расчет по формуле
+      & Значение, \rub
+      \\
+
+      \hline
+      1. Основная заработная плата разработчиков
+      & см. таблицу~\ref{table:econ:calc_zar_plata}
+      & \num\valZo
+      \\
+
+      \hline
+      2. Дополнительная заработная плата разработчиков
+      & $ \text{З}_\text{д} = \frac{\num\valZo \cdot \num\valNdPercent}{100} $
+      & \num\valZd
+      \\
+
+      \hline
+      3. Отчисления на социальные нужды
+      & $ \text{Р}_\text{соц} = \frac{(\num\valZo + \num\valZd) \cdot \num\valNSotsPercent}{100} $
+      & \num\valRSots
+      \\
+
+      \hline
+      4. Прочие расходы
+      & \vspace{0.5em} $ \text{Р}_\text{пр} = \frac{\num\valZo \cdot \num\valNPrPercent}{100} $ \vspace{0.5em}
+      & \num\valRPr
+      \\
+
+      \hline
+      5. Общая сумма затрат на разработку
+      & $ \text{З}_\text{р} = \num\valZo + \num\valZd + \num\valRSots + \num\valRPr $
+      & \num\valZr
+      \\
+
+      \hline
+      6. Плановая прибыль, включаемая в цену программного средства
+      & $ \text{П}_\text{пс} = \frac{\num\valZr \cdot \num\valRPsPercent}{100} $
+      & \num\valPPs
+      \\
+
+      \hline
+      7. Отпускная цена программного средства
+      & $ \text{Ц}_\text{пс} = \num\valZr + \num\valPPs $
+      & \num\valTsPs
+      \\
+
+      \hline
+  \end{tabular}
+\end{table}
+
+\fixTableSectionSpace
+
+\subsection{Расчет результата от разработки и использования программного средства}
+
+\subsubsection{Расчет результата для организации-разработчика}
+
+Поскольку программное средство будет реализовываться по отпускной цене,
+то экономический эффект для организации-разработчика определяется как прирост
+чистой прибыли по формуле:
+
+\begin{equation}
+  \label{eq:econ:deltaPCh}
+  \Delta \text{П}_\text{ч} = \text{П}_\text{пс} \cdot \biggl( 1 -
+    \frac{\text{Н}_\text{п}}{100} \biggr),
+\end{equation}
+\begin{explanationx}
+  \item[где] $ \text{Н}_\text{п} $ -- ставка налога на прибыль.
+\end{explanationx}
+
+\FPeval{\valNPPercent}{18}
+\FPeval{\valDeltaPCh}{round(\valPPs * (1 - \valNPPercent / 100), \configRoundSigns)}
+
+По состоянию на \econCalcDate, ставка налога на прибыль составляет
+$ \num\valNPPercent \ \% $. Используя данное значение, найдем прирост чистой прибыли
+по формуле~(\ref{eq:econ:deltaPCh}):
+
+\begin{equation}
+  \label{eq:econ:deltaPChCalc}
+  \Delta \text{П}_\text{ч} = \num\valPPs \cdot \biggl( 1 -
+    \frac{\num\valNPPercent}{100} \biggr) = \num\valDeltaPCh \rubFormula
+\end{equation}
+
+\subsubsection{Расчет результата для организации-заказчика}
+
+Разрабатываемое программное средство позволяет сэкономить на заработной плате
+и начислениях на заработную плату сотрудников за счет снижения трудоемкости работ.
+
+Для расчета экономии на заработной плате воспользуемся формулой:
+
+\begin{equation}
+  \label{eq:econ:eZP}
+  \text{Э}_\text{з.п} = \text{К}_\text{пр} \cdot
+    \bigl(t_\text{р}^\text{без п.с} - t_\text{р}^\text{с п.с} \bigr) \cdot
+    \text{Т}_\text{ч} \cdot N_\text{п} \cdot
+    \biggl( 1 + \frac{\text{Н}_\text{д}}{100} \biggr) \cdot
+    \biggl( 1 + \frac{\text{Н}_\text{соц}}{100} \biggr),
+\end{equation}
+\begin{explanationx}
+  \item[где] $ \text{К}_\text{пр} $ -- коэффициент премий;
+  \item $ t_\text{р}^\text{без п.с} $ -- трудоемкость выполнения работ сотрудниками до внедрения программного средства, ч;
+  \item $ t_\text{р}^\text{с п.с} $ -- трудоемкость выполнения работ сотрудниками после внедрения программного средства, ч;
+  \item $ \text{T}_\text{ч} $ -- часовой оклад (часовая тарифная ставка) сотрудника,
+  использующего программное средство, \rub;
+  \item $ N_\text{п} $ -- плановый объем работ, выполняемых сотрудником.
+\end{explanationx}
+
+\FPeval{\valTargetKPr}{round(1.75, \configRoundSigns)}
+\FPeval{\valTargetTCh}{round(5.36, \configRoundSigns)}
+\FPeval{\valTargetNP}{1}
+\FPeval{\valTargetTBefore}{3000}
+\FPeval{\valTargetTAfter}{2000}
+\FPeval{\valEZP}{round(\valTargetKPr * (\valTargetTBefore - \valTargetTAfter) *
+  \valTargetTCh * \valTargetNP * (1 + \valNdPercent / 100) *
+  (1 + \valNSotsPercent / 100), \configRoundSigns)}
+
+Определим коэффициент премий у организации-заказчика равным $ \text{К}_\text{пр} =
+\num\valTargetKPr $.
+
+Часовой оклад будем считать равным $ \text{T}_\text{ч} =
+\num\valTargetTCh \rubFormula $
+
+Плановый объем работ, выполняемых сотрудником, примем равным
+$ N_\text{п} = \num\valTargetNP $.
+
+Трудоемкость выполнения работ сотрудниками до внедрения примем равным
+$ t_\text{р}^\text{без п.с} = \num\valTargetTBefore \text{ ч} $, а после --
+$ t_\text{р}^\text{с п.с} = \num\valTargetTAfter \text{ ч} $.
+
+Используя найденные значения, определим экономию для организации-заказчика по
+формуле~(\ref{eq:econ:eZP}):
+
+\begin{equation}
+  \label{eq:econ:eZPCalc}
+  \begin{split}
+  % Конец формулы будет на &
+  \text{Э}_\text{з.п} = \num\valTargetKPr \cdot
+    \bigl(\num\valTargetTBefore - \num\valTargetTAfter \bigr) \cdot
+    \num\valTargetTCh \cdot \num\valTargetNP \cdot
+    \biggl( & 1 + \frac{\num\valNdPercent}{100} \biggr) \times \\
+    \times
+    \biggl( 1 + \frac{\num\valNSotsPercent}{100} \biggr) =
+    \num\valEZP \rubFormula
+  \end{split}
+\end{equation}
+
+Экономическим эффектом является прирост чистой прибыли, полученной за счет экономии
+на текущих затратах предприятия, которое определяется по формуле:
+
+\begin{equation}
+  \label{eq:econ:targetDeltaPCh}
+  \Delta \text{П}_\text{ч} = \bigl(\text{Э}_\text{тек} -
+    \Delta \text{З}_\text{тек}^\text{п.с} \bigr)
+    \cdot \biggl( 1 - \frac{\text{Н}_\text{п}}{100} \biggr),
+\end{equation}
+\begin{explanationx}
+  \item[где] $ \text{Э}_\text{тек} $ -- экономия на текущих затратах при использовании программного средства, \rub;
+  \item $ \Delta \text{З}_\text{тек}^\text{п.с} $ -- прирост текущих затрат, связанных с использованием программного средства, \rub
+\end{explanationx}
+
+\FPeval{\valDeltaZTek}{0}
+\FPeval{\valETek}{\valEZP}
+\FPeval{\valTargetDeltaPCh}{round((\valETek - \valDeltaZTek) *
+  (1 - \valNPPercent / 100), \configRoundSigns)}
+
+Поскольку установка программного средства будет происходить на новых устройствах,
+то никаких дополнительных расходов по обновлению и установке не будет. Следовательно,
+$ \Delta \text{З}_\text{тек}^\text{п.с} = \num\valDeltaZTek \rubFormula $
+
+Источником экономии на текущих затратах является экономия на заработной плате
+сотрудников. Поэтому
+$ \text{Э}_\text{тек} = \text{Э}_\text{з.п} = \num\valETek \rubFormula $
+
+Используя определенные значения, найдем прирост чистой прибыли для
+организации-заказчика по формуле~(\ref{eq:econ:targetDeltaPCh}):
+
+\begin{equation}
+  \label{eq:econ:targetDeltaPChCalc}
+  \Delta \text{П}_\text{ч} = ( \num\valETek - \num\valDeltaZTek )
+    \biggl( 1 - \frac{\num\valNPPercent}{100} \biggr) =
+    \num\valTargetDeltaPCh \rubFormula
+\end{equation}
+
+\subsection{Расчет показателей экономической эффективности разработки и использования программного средства}
+
+\subsubsection{Расчет показателей экономической эффективности для организации-разработчика}
+
+Экономическая эффективность разработки для организации-разработчика выражается
+в значении нормы прибыли, которая определяется как отношение чистой прибыли
+к выручке по формуле:
+
+\begin{equation}
+  \label{eq:econ:Ri}
+  \text{Р}_\text{и} = \frac{\Delta \text{П}_\text{ч}}{\text{З}_\text{р}}
+    \cdot 100 \ \%.
+\end{equation}
+
+\FPeval{\valRi}{round(\valDeltaPCh / \valZr * 100, \configPercentRoundSigns)}
+
+Используя ранее определенные значения, найдем значение нормы прибыли
+по формуле~(\ref{eq:econ:Ri}):
+
+\begin{equation}
+  \label{eq:econ:RiCalc}
+  \text{Р}_\text{и} = \frac{\num\valDeltaPCh}{\num\valZr}
+    \cdot 100 = \num\valRi \ \%.
+\end{equation}
+
+\subsubsection{Расчет показателей экономической эффективности для организации-заказчика}
+
+Поскольку сумма инвестиций меньше суммы годового экономического эффекта,
+то оценка экономической эффективности инвестиций в разработку программного средства
+осуществляется с помощью расчета нормы прибыли по формуле:
+
+\begin{equation}
+  \label{eq:econ:targetRi}
+  \text{Р}_\text{и} = \frac{\Delta \text{П}_\text{ч}}{\text{Ц}_\text{пс}
+    \cdot \bigl( 1 + \frac{\text{Н}_\text{д.с}}{100} \bigr) }
+    \cdot 100 \ \%,
+\end{equation}
+\begin{explanationx}
+  \item[где] $ \text{Н}_\text{д.с} $ -- ставка налога на добавленную стоимость.
+\end{explanationx}
+
+\FPeval{\valNdsPercent}{20}
+\FPeval{\valTargetRi}{round(\valTargetDeltaPCh / (\valTsPs * (1 + \valNdsPercent
+  / 100)) * 100, \configPercentRoundSigns)}
+
+По состоянию на \econCalcDate, ставка налога на добавленную стоимость составляет
+$ \num\valNdsPercent \ \% $.
+
+Используя ранее найденные значения прироста чистой прибыли
+и цену программного средства, определим значение нормы прибыли
+по формуле~(\ref{eq:econ:targetRi}):
+
+\begin{equation}
+  \label{eq:econ:targetRiCalc}
+  \text{Р}_\text{и} = \frac{\num\valTargetDeltaPCh}{\num\valTsPs
+    \cdot \bigl( 1 + \frac{\num\valNdsPercent}{100} \bigr) }
+    \cdot 100 = \num\valTargetRi \ \%.
+\end{equation}
+
+\subsection{Вывод об экономической эффективности}
+
+В результате технико-экономического обоснования был произведен расчет инвестиций
+в разработку программного средства, расчет результата от разработки и использования
+программного средства и расчет показателей экономической эффективности разработки
+и использования. Общая сумма затрат на разработку программного средства составила
+$ \num\valZr $ рублей, отпускная цена -- $ \num\valTsPs $ рублей, чистая прибыль
+организации-разработчика -- $ \num\valDeltaPCh $ рублей, простая норма прибыли
+организации-разработчика -- $ \num\valRi \ \% $ и простая норма прибыли
+организации-заказчика -- $ \num\valTargetRi \ \% $.
+
+Анализируя полученные результаты, можно сделать однозначный вывод о том,
+что внедрение и использование данного программного средства в организации-заказчике
+оправдает первоначальные инвестиции в его разработку. С другой стороны,
+для организации-разработчика данного программного средства чистая прибыль,
+полученная от его разработки, будет полностью удовлетворять средние показатели
+рентабельности.
