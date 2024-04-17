@@ -21,71 +21,123 @@
 
 Почти все методы калибровки используют упрощенную модель измерения трехосного магнетометра:
 
-$$ y = Tm+h+e$$
+\begin{equation}
+    \label{eq:domain:magnetModel}
+    y = Tm+h+e,
+  \end{equation}
+  \begin{explanationx}
+    \item[где] $h$~-- жесткие смещения, то есть смещения вызванные материалами, которые вызывают смещения, прикрепленные к системе координат, такие материалы генерируют собственное  постоянное магнитное поле;
+    \item      $T$~-- мягкие смещение (представляет собой матрицу 3x3) --- смещения вызванные наличием ферромагнитных материалов вблизи датчика;
+    \item      $e$~-- случайный шум, вызванные особенностями механической и электрической архитектуры датчика, считается, что это последовательность белого шума;
+    \item      $m$~-- истинное магнитное поле;
+    \item      $y$~-- искаженное магнитное поле.
+  \end{explanationx}
 
-где $h$~-- жесткие смещения, то есть смещения вызванные материалами, которые вызывают смещения, прикрепленные к системе координат, 
-такие материалы генерируют собственное  постоянное магнитное поле,
-$T$~-- мягкие смещение (представляет собой матрицу 3x3) --- смещения вызванные наличием ферромагнитных материалов вблизи датчика,
-эти материалы не генерируют собственное магнитное поле, а вместо этого локально изменяют существующее магнитное поле, что приводит к расхождению измерений,
-$e$~-- случайный шум, вызванные особенностями механической и электрической архитектуры датчика, считается, что это последовательность белого шума.
-$m$~-- истинное магнитное поле, $y$~-- искаженное магнитное поле.
-
-Используемый в дипломном проекте метод калибровки магнетометра, называемый <<MAG.I.C.AL.>>, предполагает, что данные измерений магнитометра
+Используемый в дипломном проекте метод калибровки магнетометра, называемый <<MAG.I.C.AL>>, предполагает, что данные измерений магнитометра
 лежат на эллипсоиде согласно модели измерений, то есть набор векторов, представляющий измерения магнетометра по трём осям, 
 имеет вид на трехмерной плоскости в виде эллипсоида. %%TODO: add link to equitation %%. 
 
 %TODO: поправить формулу%
 Для алгоритма требуется проинициализировать вектора магнитного поля:
 
-$$ mk = yk/|yk| $$
-
-где $K$ количество измерений.
+\begin{equation}
+    \label{eq:domain:initMK}
+    m_{k} = \frac{y_{k}}{\left|y_{k}\right|}, k=1,2,3,\dots ,K,
+  \end{equation}
+  \begin{explanationx}
+    \item[где] $K$~-- количество измерений.
+  \end{explanationx}
 
 Алгоритм использует другую форму модели измерений записанную как:
 
-$$ Y = LG + E $$
+\begin{equation}
+    \label{eq:domain:updatedMagnetModel}
+    Y = LG+E,
+  \end{equation}
 
-где
-$$ Y = [y1..yk] $$,
-$$ L = [T h] $$,
-$$ G = [m1..mk][1..1] $$,
-$$ E = [e1..ek] $$,
+\begin{equation}
+    \label{eq:domain:Y}
+    Y = \begin{bmatrix}
+        y_{1} & y_{2} & \dots & y_{K}
+        \end{bmatrix}
+        \text{,}
+  \end{equation}
+
+\begin{equation}
+    \label{eq:domain:L}
+    L = \begin{bmatrix}
+        T & h
+        \end{bmatrix}
+        \text{,}
+  \end{equation}
+
+\begin{equation}
+    \label{eq:domain:G}
+    G = \begin{bmatrix}
+        m_{1} & m_{2} & \dots & m_{K} \\
+        1 & 1 & \dots & 1
+        \end{bmatrix}
+        \text{,}
+  \end{equation}
+
+\begin{equation}
+    \label{eq:domain:E}
+    E = \begin{bmatrix}
+            e_{1} & e_{2} & \dots & e_{K}
+        \end{bmatrix}
+        \text{,}
+  \end{equation}
 
 $L$ ищется при помощи метода наименьших квадратов, используя формулу:
 
-$$ L=YG^T(GG^T)^-1$$
+\begin{equation}
+    \label{eq:domain:findL}
+    L=YG^{T}(GG^{T})^{-1}
+  \end{equation}
 
-По полученным параметрам $T$ и $h$ извлеченных из $L$, обновим вектор магнитного поля:
-$$ mk = m~k/|m~k| $$
+По полученным параметрам $T$ и $h$ извлеченных из $L$, обновим вектор магнитного поля $m_{k}$:
 
-, где $mk$ найдено из формулы:  
-$$ m~k = T^-1(yk - h) $$
+\begin{equation}
+    \label{eq:domain:updateMk}
+    m_{k}=\frac{m_{k}^{'}}{\left|m_{k}^{'}\right|}
+  \end{equation}
+
+где $m_{k}^{'}$ найдено из формулы:
+
+\begin{equation}
+    \label{eq:domain:findNewMk}
+    m_{k}^{'}=T^{-1} \cdot (y_{k}-h)
+  \end{equation}
 
 Далее вычисленный вектор оценивается при помощи функции:
 
-$$ J(T, h) = ... $$
+\begin{equation}
+    \label{eq:domain:findError}
+    J(T, h) = \sum_{k=1}^{K}(|m_{k}^{'}|^{2}-1)^{2}
+  \end{equation}
 
 Если оценка не достигла минимального значения, то $G$ обновляется вычисленным вектором $m~k$ и снова вычисляется $T$ и $h$.
 Обобщенно алгоритм можно представить так:
 % TODO:Добавить ссылки на формулы %.
 % TODO:Дизобразить в виде блок схемы%.
 \begin{enumerate}
-    \item Инициализация mk.
-    \item Расчет L.
-    \item извлечение T, h из L.
-    \item Обновление вектора mk из формулы 
-    \item Оценка полученного вектора mk.
-    \item Повтор шага 2-5
+    \item Инициализация $m_{k}$ по формуле \ref{eq:domain:initMK}.
+    \item Расчет $L$ по формуле \ref{eq:domain:findL}.
+    \item извлечение $T$, $h$ из $L$, формула \ref{eq:domain:L}.
+    \item Обновление вектора $m_{k}$ из формулы \ref{eq:domain:updateMk}.
+    \item Оценка полученного вектора $m_{k}$, по формуле \ref{eq:domain:findError}.
+    \item Повтор шага б-е.
 \end{enumerate}
 
 \subsubsection{Сравнение актуальных алгоритмов калибровки магнетометра}
 
-Помимо выбранного алгоритма калибровки магнетометра существуют также другие способы вычислить параметры T и h. 
+Помимо выбранного алгоритма калибровки магнетометра существуют также другие способы вычислить параметры $T$ и $h$. 
 В статье %ссыль%%
 приводится сравнение известных алгоритмов по их точности, надежности и среднему времени выполнения, степени простоты.
 \begin{itemize}
-    \item Параметр точности определяется как среднее значение отклонений (разница полученых параметров h и T от истинных h и T) для всех N тестов (больше ~-- лучше).
-    \item Cреднее время выполнения определяется как среднее значение времени выполнения алгоритма (больше ~-- лучше).
+    \item Параметр точности определяется как среднее значение отклонений (разница полученых параметров $h$ и $T$ от истинных $h$ и $T$) 
+    для всех $N$ тестов (больше ~-- лучше).
+    \item Среднее время выполнения определяется как среднее значение времени выполнения алгоритма (больше ~-- лучше).
     \item Надежность определяется как процент наборов данных, для которых каждый алгоритм успешно нашел значимое решение (больше ~-- лучше).
 \end{itemize}
 
@@ -94,81 +146,156 @@ $$ J(T, h) = ... $$
 \begin{table}[ht]
     \caption{Сравнение алгоритмов калибровки магнетометра}
     \label{table:domain:magnet_calib_comp}
-    \begin{tabular}{| >{\raggedright}m{0.2\textwidth}
-                    | >{\raggedright\arraybackslash}m{0.2\textwidth}|
-                    | >{\raggedright\arraybackslash}m{0.2\textwidth}|
-                    | >{\raggedright\arraybackslash}m{0.2\textwidth}|
+    \begin{tabular}{| >{\raggedright}m{0.25\textwidth}
+                    | >{\raggedright}m{0.2\textwidth}
+                    | >{\raggedright}m{0.2\textwidth}
                     | >{\raggedright\arraybackslash}m{0.25\textwidth}|}
         \hline
-        \centering Точность & 
-        \centering\arraybackslash Надежность &
-        \centering\arraybackslash Время выполнения &
-        \centering\arraybackslash Степень простоты \\
+        \centering Точность & \centering Надежность & \centering Время выполнения & \centering\arraybackslash Степень простоты \\
         \hline
-        TWOSTEP & 0 & 0.916 & 1 \\
-        Crassidis & 0.014 & 1 & 0.104 \\
-        Dorveaux & 0.974 & 1 & 0.028 \\
-        Vasconcelos & 0.983 & 0.996 & 0 \\
-        Ali & 0.978 & 0.988 & 0.00002 \\
-        Wu and Shi & 1 & 0.872 & 0.00033 \\
-        MAG.I.C.AL & 0.983 & 1 & 0.064 \\
+
+        TWOSTEP & 
+        0 & 
+        0.916 & 
+        1 
+        \\
+        \hline
+
+        Crassidis & 
+        0.014 & 
+        1 & 
+        0.104 
+        \\
+        \hline
+
+        Dorveaux & 
+        0.974 & 
+        1 & 
+        0.028 
+        \\
+        \hline
+
+        Vasconcelos & 
+        0.983 & 
+        0.996 & 
+        0 
+        \\
+        \hline
+
+        Ali & 
+        0.978 & 
+        0.988 & 
+        0.00002
+        \\
+        \hline
+
+        Wu and Shi & 
+        1 & 
+        0.872 & 
+        0.00033 
+        \\
+        \hline
+
+        MAG.I.C.AL & 
+        0.983 & 
+        1 & 
+        0.064 
+        \\
         \hline
     \end{tabular}
 \end{table}
-\fixTableSectionSpace
 
-Исходя из полученного сравнения алгоритм <<MAG.I.C.AL.>> обладает лучшей оценкой.
+Исходя из полученного сравнения алгоритм <<MAG.I.C.AL>> обладает лучшей оценкой.
 
 \subsection{Метод калибровки акселерометра и гироскопа}
 
 На измерения гироскопа и акселерометра влияют такие параметры как чувствительность датчика и смещение относительно нуля.
 На такие параметры в датчике обычно влияет температура.
-Для описания модели измерений можно воспользоваться формулой %% TODO: ссылка из магнетометра %%
-, которую можно упростить до вида:
+Для описания модели измерений можно воспользоваться формулой \ref{eq:domain:magnetModel}
+, которую можно преобразовать до вида:
 
-$$ y = X*m $$
-, где X это матрица состоящая из T и h.
-В формуле T описывает параметр чувствительности, а параметр h смещение относительно нуля.
-Для калибровки гироскопа в разрабатываемом модуле не предусмотрен поиск параметра T в силу того, 
+\begin{equation}
+    \label{eq:domain:magnetModel}
+    y = Xm+e,
+  \end{equation}
+  \begin{explanationx}
+    \item[где] $X$~-- матрица состоящая из $T$ и $h$;
+  \end{explanationx}
+
+В формуле $T$ описывает параметр чувствительности, а параметр $h$ смещение относительно нуля.
+Для калибровки гироскопа в разрабатываемом модуле не предусмотрен поиск параметра $T$ в силу того, 
 что нужно разрабатывать отдельный калибровочный стенд способный вращать устройство с определенной 
 угловой скоростью относительно каждой оси трехмерной системы координат. Но описанный ниже алгоритм подходит для двух типов датчиков, 
 только вместо ускорения свободного падения относительно каждой оси нужно заменить на угловую скорость.
 
 Для алгоритма потребуются начальные входные данные от неоткалиброванного устройства в шести положениях относительно датчика.
 \begin{enumerate}
-    \item Положение осью X вниз.
-    \item Положение осью X вверх.
-    \item Положение осью Y вниз.
-    \item Положение осью Y вверх.
-    \item Положение осью Z вниз.
-    \item Положение осью Z вверх.
+    \item Положение осью $X$ вниз.
+    \item Положение осью $X$ вверх.
+    \item Положение осью $Y$ вниз.
+    \item Положение осью $Y$ вверх.
+    \item Положение осью $Z$ вниз.
+    \item Положение осью $Z$ вверх.
 \end{enumerate}
 
-Для каждого положения определим эталонный вектор свободного ускорения падения Y, например для положения осью X вверх, вектор Y имеет вид:
+Для каждого положения определим эталонный вектор свободного ускорения падения $Y$, например для положения осью $X$ вверх, вектор $Y$ имеет вид:
 
-$$ Yxup = [1 0 0] $$
+\begin{equation}
+    \label{eq:domain:Yxup}
+    Y_{x вверх} = \begin{bmatrix}
+            1 & 0 & 0
+        \end{bmatrix}
+        \text{,}
+  \end{equation}
 
 Для положения осью Z вниз, эталонный вектор будет иметь вид:
 
-$$ Yzdown = [0 0 -1] $$
+\begin{equation}
+    \label{eq:domain:Yzdown}
+    Y_{z вниз} = \begin{bmatrix}
+            0 & 0 & -1
+        \end{bmatrix}
+        \text{,}
+  \end{equation}
 
 Также для каждого положения нужно получить набор неоткалиброванных данных. 
 К вектору неоткалиброванных данных нужно добавить еще один четвертый элемент 1, теперь вектор входных данных имеет вид:
 
-$$ m = [mx my mz 1]$$
+\begin{equation}
+    \label{eq:domain:XL_meas}
+    m = \begin{bmatrix}
+            m_{x} & m_{y} & m_{z} & 1
+        \end{bmatrix}
+        \text{,}
+  \end{equation}
 
 Далее нужно сформировать полный набор данных, как эталонных так и выходных, матрицы будут иметь вид:
 
-$$ 
-Y^T = [Y1...Y6],
-m^T = [m1..m6]
-$$
+\begin{equation}
+    \label{eq:domain:XL_Y_dataset}
+    Y = \begin{bmatrix}
+            Y_{x вниз} \\ Y_{x вверх} \\ \dots \\ Y_{z вверх}
+        \end{bmatrix}
+        \text{,}
+  \end{equation}
+
+
+\begin{equation}
+    \label{eq:domain:XL_M_dataset}
+    m = \begin{bmatrix}
+            m_{x вниз} \\ m_{x вверх} \\ \dots \\ m_{z вверх}
+        \end{bmatrix}
+        \text{,}
+  \end{equation}
 
 Следующим шагом используя метод наименьших квадратов можно определить калибровочные параметры:
 
-$$  Мне лень писать формулу $$
+\begin{equation}
+    \label{eq:domain:XL_CALIB}
+    X = \left[m^T \cdot m\right]^{-1}\cdot m^T \cdot Y
+  \end{equation}
 
-Данный алгоритм достаточно популярен за счет простоты математичеких расчетов, недостатком можно выделить то что 
+Данный алгоритм достаточно популярен за счет простоты математических расчетов, недостатком можно выделить то, что 
 для алгоритма требуется большой набор данных состоящий из набора векторов для каждой оси, в микроконтроллерах ограниченных небольшим 
 количеством памяти требуется оптимизировать алгоритм. 
 
@@ -230,66 +357,97 @@ $$  Мне лень писать формулу $$
 поворотной матрицы, которая поворачивает ось измерений согласно наклону устройства. Наклон устройства 
 считывается с датчиков акселерометра и гироскопа.
 
-Для расчета азимута потребуется только две оси магнетометра $x$~,$y$, ось $z$ в расчетах будет избыточной.
+Для расчета азимута потребуется только две оси магнетометра $x$,$y$, ось $z$ в расчетах будет избыточной.
 Чтобы представить азимут в радианах нужно воспользоваться формулой:
-
-$$ azimuth = atan(Hx/Hy)$$
-
-, где $Hx$,$Hy$ --- компоненты вектора измерения магнетометра. 
+\begin{equation}
+    \label{eq:domain:rawAzimuth}
+    azimuth = \arctan\left(\frac{Hx}{Hy}\right),
+  \end{equation}
+  \begin{explanationx}
+    \item[где] $H_x$ ~-- измерения магнетометра по оси $x$;
+    \item $H_y$ ~-- измерения магнетометра по оси $y$.
+  \end{explanationx}
 
 Для поворота системы координат можно использовать как квантерионы, так и углы Эйлера.
 Если представлять поворот стационарной (неподвижную) системы координат в наклоненную систему, то
 необходимо повернуть ось X на угол крена ($\theta$)~, а ось Y на угол тангажа ($\phi$).
 Представить стационарную систему координат в наклоненную систему можно при помощи матрицы поворота ---
-матрица $\mathbf{C}$ размера 3×3, на которую нужно умножить любой вектор в связанной системе координат, 
+матрица $C$ размера 3×3, на которую нужно умножить любой вектор в связанной системе координат, 
 чтобы получить тот же вектор в географической системе.
 
 Поворотная матрица оси X выглядит следующим образом:
-
-$\mathbf{С_X}= \begin{bmatrix} 1 & 0 & 0 \\ 
-                                  0 & \cos{\theta} & -\sin{\theta} \\ 
-                                  0 & -\sin{\theta} & \cos{\theta} \\ 
-                  \end{bmatrix}$
+\begin{equation}
+    \label{eq:domain:rotateXmat}
+    С_X = \begin{bmatrix} 1 & 0 & 0 \\ 
+        0 & \cos{\theta} & -\sin{\theta} \\ 
+        0 & -\sin{\theta} & \cos{\theta} \\ 
+        \end{bmatrix}
+    \end{equation}
 
 Для поворота оси Y матрица будет выглядеть так:
 
-$\mathbf{C_Y}= \begin{bmatrix} \cos{\theta} & 0 & -\sin{\theta} \\ 
-    0 & 1 & 0 \\ 
-    \sin{\phi} & 0 & \cos{\phi} \\ 
-\end{bmatrix}$
+\begin{equation}
+    \label{eq:domain:rotatYmat}
+    C_Y = \begin{bmatrix} \cos{\theta} & 0 & -\sin{\theta} \\ 
+        0 & 1 & 0 \\ 
+        \sin{\phi} & 0 & \cos{\phi} \\ 
+    \end{bmatrix}
+    \end{equation} 
 
 Влияние поворота устройства на поворот его стационарной систему координат,
 можно записать следующим образом:
 
-$ \begin{bmatrix} x^' \\ y^' \\ z^' \\ \end{bmatrix} = 
-\mathbf{С_X} \cdot \mathbf{С_Y} \cdot \begin{bmatrix} x \\ y \\ z \\ \end{bmatrix} $
+\begin{equation}
+    \label{eq:domain:magnetTilt}
+    \begin{bmatrix} x^{'} \\ y^{'} \\ z^{'} \\ \end{bmatrix} = 
+            С_X \cdot С_Y \cdot \begin{bmatrix} x \\ y \\ z \\ \end{bmatrix}
+    \end{equation} 
 
-$ \begin{bmatrix} x^' \\ y^' \\ z^' \\ \end{bmatrix} = 
-\begin{bmatrix} \cos{\phi} & 0 & -\sin{\phi} \\ 
-    \sin{\phi}sin{\theta} & \cos{\theta} & \sin{\theta}cos{\phi} \\ 
-    \cos{\theta}sin{\phi} & -\sin{\theta} & \cos{\theta}cos{\phi} \\ 
-\end{bmatrix}
-\cdot
-\begin{bmatrix} x \\ y \\ z \\ \end{bmatrix} $
+\begin{equation}
+    \label{eq:domain:magnetTiltExtendet}
+    \begin{bmatrix} x^{'} \\ y^{'} \\ z^{'} \\ \end{bmatrix} = 
+    \begin{bmatrix} \cos{\phi} & 0 & -\sin{\phi} \\ 
+        \sin{\phi}sin{\theta} & \cos{\theta} & \sin{\theta}cos{\phi} \\ 
+        \cos{\theta}sin{\phi} & -\sin{\theta} & \cos{\theta}cos{\phi} \\ 
+    \end{bmatrix}
+    \cdot
+    \begin{bmatrix} x \\ y \\ z \\ \end{bmatrix}
+    \end{equation} 
 
-Магнитный датчик измеряет компоненты x' y' z' магнитного вектора Земли. 
+Магнитный датчик измеряет компоненты $x^{'}$, $y^{'}$, $z^{'}$  магнитного вектора Земли. 
 Для определения азимута эти значения должны быть преобразованы в стационарную систему координат.
 Это преобразование выполняется с использованием инвертированной матрицы вращения:
-
-$ \begin{bmatrix} x^' \\ y^' \\ z^' \\ \end{bmatrix} = 
-\begin{bmatrix} \cos{\phi} & \sin{\phi}sin{\theta} & \cos{\theta}sin{\phi} \\ 
-                0 & \cos{\theta} & -\sin{\theta} \\ 
-                -\sin{\phi} & \sin{\theta}cos{\phi}& \cos{\theta}cos{\phi} \\ 
-\end{bmatrix}
-\cdot
-\begin{bmatrix} x \\ y \\ z \\ \end{bmatrix} $
+\begin{equation}
+    \label{eq:domain:invMagnetTilt}
+    \begin{bmatrix} x \\ y \\ z \\ \end{bmatrix} = 
+    \begin{bmatrix} \cos{\phi} & \sin{\phi}sin{\theta} & \cos{\theta}sin{\phi} \\ 
+        0 & \cos{\theta} & -\sin{\theta} \\ 
+        -\sin{\phi} & \sin{\theta}cos{\phi}& \cos{\theta}cos{\phi} \\ 
+    \end{bmatrix}
+    \cdot
+    \begin{bmatrix} x^{'} \\ y^{'} \\ z^{'} \\ \end{bmatrix}
+    \end{equation} 
 
 Так как координата $z$ не используется в расчетах можно упростить формулу до вида:
+\begin{equation}
+    \label{eq:domain:xMagnetTilt}
+    x = x'\cos{\phi}+y'\sin{\theta}\sin{\phi}+z'\cos{\theta}\sin{\phi}
+    \end{equation} 
 
-$$ x = x'\cos{\phi}+y'\sin{\theta}\sin{\phi}+z'\cos{\theta}\sin{\phi}$$
-$$ y = y'\cos{\theta}+z'\sin{\theta}$$
+\begin{equation}
+    \label{eq:domain:yMagnetTilt}
+    y = y'\cos{\theta}+z'\sin{\theta}
+    \end{equation} 
 
 Углы $\phi$, $\theta$ могут быть получены исходя из данных полученных от гироскопа и акселерометра.
+
+% https://www.ncei.noaa.gov/products/world-magnetic-model
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.0\linewidth]{wmm}
+    \caption{Магнитная модель Земли}
+    \label{pic:domain:wmm}
+\end{figure}
 
 После перечета координат x, y к стационарной системе координат, можно рассчитать азимут, 
 а также чтобы преобразовать полученный азимут как угол отклонения часовой стрелки нужно 
@@ -298,27 +456,18 @@ $$ y = y'\cos{\theta}+z'\sin{\theta}$$
 \begin{equation}
     azimuth =
     \begin{cases}
-      \pi - \arctan{\frac{y}{x}} \text{, x<0}\\      
-      - \arctan{\frac{y}{x}} \text{, x>0, y<0} \\
-      2\pi - \arctan{\frac{y}{x}} \text{, x>0, y>0} \\
+      \pi - \arctan\left(\frac{y}{x}\right) \text{, x<0}\\      
+      - \arctan\left(\frac{y}{x}\right) \text{, x>0, y<0} \\
+      2\pi - \arctan\left(\frac{y}{x}\right) \text{, x>0, y>0} \\
       90 \text{, x=0, y<0} \\
       270 \text{, x=0, y>0}
     \end{cases}
-    \end{equation}
 \end{equation}
-
-% https://www.ncei.noaa.gov/products/world-magnetic-model
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=1.0\linewidth]{wmm}
-    \caption{Магнитная модель Земли}
-    \label{pic::domain::wmm}
-\end{figure}
 
 Также на компас действует магнитное наклонение Земли --- угол, на который отклоняется стрелка под действием 
 магнитного поля Земли в вертикальной плоскости. Для уточнения азимута нужно использовать магнитную модель Земли
 и текущие координаты.
-Достоверная модель показана на рисунке~\ref{pic::domain::wmm}.
+Достоверная модель показана на рисунке \ref{pic:domain:wmm}.
 
 \subsection{БИХ-фильтр}
 %http://www.dsplib.ru/content/filters/butterex/butterex.html
@@ -330,27 +479,45 @@ $$ y = y'\cos{\theta}+z'\sin{\theta}$$
 поступает на фильтр и вносит изменения сам в себя). 
 Передаточная функция БИХ-фильтра имеет дробно-рациональный вид. Основные известные БИХ-фильтры: 
 фильтр Чебышева, Баттерворта, Калмана, Бесселя и т.д
-Разностное уравнение БИХ-фильтра:
-$$ y(n) = \sum_{k=0}^{N}b_{k}x(n-k) - \sum_{k=1}^{M}a_{k}y(n-k)$$
-где $a_{k}$, $b_{k}$ ~-- это коэффициенты фильтра.
+Каноническая структурная схема фильтра представлена на рисунке \ref{pic:domain:iic}, разностное уравнение БИХ-фильтра:
+\begin{equation}
+    \label{eq:domain:IIC}
+    y(n) = \sum_{k=0}^{N}b_{k}x(n-k) - \sum_{k=1}^{M}a_{k}y(n-k)
+    \end{equation}
+    \begin{explanationx}
+        \item[где] $a_{k}$, $b_{k}$ ~-- это коэффициенты фильтра.
+      \end{explanationx} 
+
+      \begin{figure}[ht]
+        \centering
+        \includegraphics[width=1.0\linewidth]{iic}
+        \caption{Каноническая структурная схема БИХ фильтра}
+        \label{pic:domain:iic}
+    \end{figure}
+    
 Из уравнения видно, что выходной сигнал фильтра за счет обратных связей влияет сам на себя. 
 Также уравнение можно представить как свертку входного сигнала и импульсной характеристики фильтра $h(n)$:
 
-$$ y(n) = h(n)\circledast~x(n)$$
+\begin{equation}
+    \label{eq:domain:convolution}
+    y(n) = h(n) \ast  x(n)
+    \end{equation}
 
-которую при помощи Z преобразования удобно представить в виде произведения Z-образов входной последовательности X(z) и передаточной функции H(z):
-
-$$ Y(z) = H(z)X(z)$$
+Уравнение \ref{eq:domain:convolution} при помощи Z преобразования удобно представить в виде произведения Z-образов входной последовательности X(z) и передаточной функции H(z):
+\begin{equation}
+    \label{eq:domain:Zconvolution}
+    Y(z) = H(z)X(z)
+    \end{equation}
 
 Для расчета коэффициентов фильтра удобно использовать аналоговый прототип для получения передаточной характеристики. 
 Это достаточно известный и широко используемый метод, для расчетов потребуется наличие нескольких параметров:
 
-\begin{enumerate}
-    \item $\omega_{p}$ ~-- нормированная частота среза
-    \item $\omega_{s}$ ~-- нормированная частота заграждения
-    \item $R_{p}$ ~-- неравномерность в полосе пропускания
-    \item $R_{s}$ ~-- уровень подавления в полосе заграждения
-\end{enumerate}
+\begin{itemize}
+    \item $\omega_{p}$ ~-- нормированная частота среза;
+    \item $\omega_{s}$ ~-- нормированная частота заграждения;
+    \item $R_{p}$ ~-- неравномерность в полосе пропускания;
+    \item $R_{s}$ ~-- уровень подавления в полосе заграждения.
+\end{itemize}
 
 В дипломном проектировании используется фильтр нижних частот (ФНЧ) на основе фильтр Баттерворта, 
 который был выбран за счет того что имеет максимально плоскую амплитудно-частотную характеристику
@@ -362,27 +529,62 @@ $$ Y(z) = H(z)X(z)$$
 заграждения не меняются при переходе от аналогового фильтра к цифровому. 
 Искажение рассчитывается формулой:
 
-$$ \Omega=frac{2}{T}\tan{frac{\omega}{2}}$$
-
-где $T$ ~-- интервал дискретизации, 
-$\Omega$ ~-- пересчитанная шкала частот для аналогового фильтра, 
-$\omega$ ~-- шкала частот цифрового фильтра.
+\begin{equation}
+    \label{eq:domain:Omega}
+    \Omega=\frac{2}{T}\tan{\frac{\omega}{2}}
+    \end{equation}
+    \begin{explanationx}
+        \item[где] $T$ ~-- интервал дискретизации;
+        \item      $\Omega$ ~-- пересчитанная шкала частот для аналогового фильтра;
+        \item      $\omega$ ~-- шкала частот цифрового фильтра.
+      \end{explanationx} 
 
 Далее нужно рассчитать порядок ФНЧ Баттерворта:
 
-$$ N=\frac{log{\frac{\sqrt{10^{$R_{s}/10}-1}}{\sqrt{10^{$R_{p}/10}-1}}}}{\log{\frac{\Omega_{s}}{\Omega_{p}}}} $$
+\begin{equation}
+    \label{eq:domain:NIIC}
+    N=\frac{log{\frac{\sqrt{10^{R_{s}/10}-1}}
+                     {\sqrt{10^{R_{p}/10}-1}}}}
+           {\log{\frac{\Omega_{s}}
+                      {\Omega_{p}}}}
+    \end{equation}
 
 Порядок округляется до ближайшего целого и далее вычисляется передаточная характеристика:
 
-$$ H(z) = \frac{1}{\epsilon_{p}(s+\alpha)^r\cdot\prod_{n=1}^{L}(s^2+2\alpha\sin{\theta_{n}s+\alpha^2})}$$
+\begin{equation}
+    \label{eq:domain:Hz}
+    H(z) = \frac{1}
+                {\epsilon_{p} (s + \alpha )^r \cdot \prod_{n=1}^{L} (s^{2} + 2 \alpha \sin{ \theta_{n} s + \alpha^{2}})}
+    \end{equation}
 
-$$N=2\cdot L+r$$, 
-$$\alpha=\frac{1}{\sqrt[N]{\sqrt{10^{$R_{p}/10}-1}}}$$, 
-$$\theta_{n}=\frac{2\cdot n - 1}{2\cdot N}\cdot\pi$$,
-$$s=\frac{2}{T\cdot \Omega_{p}}\cdot\frac{1-z^{-1}}{1+z^{-1}}$$
+\begin{equation}
+        \label{eq:domain:whereN}
+        N=2 \cdot L+r
+        \end{equation}
+
+\begin{equation}
+        \label{eq:domain:whereAlpha}
+        \alpha=\frac{1}
+                    {\sqrt[N]{\sqrt{10^{R_{p}/10}-1}}}
+        \end{equation}
+
+\begin{equation}
+        \label{eq:domain:whereTheta}
+        \theta_{n}=\frac{2\cdot n - 1}
+                        {2\cdot N} \cdot \pi
+        \end{equation}
+
+\begin{equation}
+        \label{eq:domain:whereS}
+        s=\frac{2}
+                {T\cdot \Omega_{p}} \cdot \frac{1-z^{-1}}
+                                                {1+z^{-1}}
+        \end{equation}
 
 Данное уравнение необходимо упростить до вида:
-
-$$ H(z) = \frac{\sum_{i=0}^{N}b_{i}\cdot z^{-i}}{1+\sum_{k=1}^{N-1}\cdot a_{k}z^{-k}} $$
+\begin{equation}
+    \label{eq:domain:whereS}
+    H(z)=\frac{\sum_{i=0}^{N}b_{i}\cdot z^{-i}}{1+\sum_{k=1}^{N-1}\cdot a_{k}z^{-k}}
+    \end{equation}
 
 Полученные коэффициенты $a_{m}$, $b_{i}$ являются искомыми коэффициентами ФНЧ. % ссылка на формулу фильтра
