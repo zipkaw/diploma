@@ -1,21 +1,17 @@
-# Diplom report
+# About
+The diploma project about calibration and filtering IMU sensors for bachelor degree.
 
-Built with GitLab CI: [![pipeline status](https://gitlab.com/HannaWAR/goose/badges/master/pipeline.svg)](https://gitlab.com/HannaWAR/goose/commits/master)
-
-## Диаграммы
-
-### Диаграмма последовательности обработка ICD-файла
-
-```plantuml
-@startuml
-!include /Diagrams/sequenceBench.plantuml
-@enduml
+## Build
+### Main report 
+Using make:
+```sh
+make -j4 -C "main_report" cleanall
+make -j4 -C "main_report" all
 ```
 
-### Диаграмма последовательности обработка GOOSE-пакета
-
-```plantuml
-@startuml
-!include /Diagrams/sequenceMsg.plantuml
-@enduml
+### Practice report 
+Using make:
+```sh
+make -j4 -C "practice_report" cleanall
+make -j4 -C "practice_report" all
 ```
