@@ -3,7 +3,7 @@
 
 В данном разделе модули описаны с точки зрения разработки функций, которые реализуются в
 дипломном проекте. Функциональное проектирование нацелено на создание корректно и
-эффективно работающего проекта. Представление необходимого функционала~-- основная задача
+эффективно работающего проекта. Представление необходимого функционала -- основная задача
 текущего раздела. После анализа требуемых для реализации программного продукта
 функций, было решено разбить программу на следующие модули:
 
@@ -38,10 +38,10 @@
 ошибки (<<*>> отмечено название модуля):
 
 \begin{itemize}
-    \item \lstinline{*_OK}~-- код успешного завершения функции;
-    \item \lstinline{*_ERROR_UNKNOWN}~-- код в случае, если ошибка не установлена, например, 
+    \item \lstinline{*_OK} -- код успешного завершения функции;
+    \item \lstinline{*_ERROR_UNKNOWN} -- код в случае, если ошибка не установлена, например, 
     такой код возврата может быть, в случае неопределенного поведения как исполняемого модуля, так и внешнего;
-    \item \lstinline{*_ERROR_INVALID_ARGUMENT}~-- код, если был подан неверный аргумент в функцию;
+    \item \lstinline{*_ERROR_INVALID_ARGUMENT} -- код, если был подан неверный аргумент в функцию;
 \end{itemize}
 
 Остальные ошибки зависящие от реализации конкретного модуля определены в его открытом API, и содержат подробное описание ошибки.
@@ -57,12 +57,12 @@
 \subsection{Описание работы библиотеки <<ProtoThreads>>}
 %% Todo: узнать про причины использования РТ
 При разработке программного обеспечения в связи с ограниченными ресурсами микроконтроллера было выбрана <<bare-metal>>
-разработка~-- это означает, что программа исполняется на уровне процессора, обходя слой операционной системы.
+разработка -- это означает, что программа исполняется на уровне процессора, обходя слой операционной системы.
 В связи с отсутствием операционной системы работа приложения может быть очень долгой из-за синхронной обработки модулем событий:
 во время работы модуля, различные ожидания могут очень сильно останавливать работу других модулей и, следовательно работу всего устройства в целом.
 Из-за долгих ожиданий могут теряться важные сообщения из внешнего мира и периферии.
 
-Переход на асинхронный режим позволяет решить проблему ожиданий во время работы модуля, вводит такое понятие как переключение контекста~-- переход программы
+Переход на асинхронный режим позволяет решить проблему ожиданий во время работы модуля, вводит такое понятие как переключение контекста -- переход программы
 от одной задачи к другой, при этом данные в первой задаче сохраняются и ждут очереди на обработку, пока контекст снова не переключится на них. Также асинхронный
 режим работы модуля позволяет делать асинхронные вызовы функций, их суть заключается в том, что в такие функции передается запрос на чтение/запись/обработку данных
 и в параметры передается функция обратного вызова. Внутри асинхронных функций устанавливаются нужные флаги, и когда модуль, чей асинхронный вызов был использован,
@@ -75,37 +75,37 @@
 В дипломном проектировании используются следующие примитивы библиотеки:
 
 \begin{itemize}
-    \item \lstinline{PT_INIT}~-- инициализирует поток;
-    \item \lstinline{PT_BEGIN}~-- объявляет начало потока, данный примитив выполняет возобновление контекста(т.е. переход в то место процесса, где было совершено переключение контекста);
-    \item \lstinline{PT_END}~-- объявляет завершение потока;
-    \item \lstinline{PT_WAIT_UNTIL}~-- выполняет остановку потока, и ждет, когда условие не станет истинно, в ином случае переключает контекст.
-    \item \lstinline{PT_WAIT_WHILE}~-- выполняет остановку потока, и ждет, когда условие истинно, в ином случае переключает контекст.
-    \item \lstinline{PT_RESTART}~-- выполняет сброс потока и переключает контекст.
-    \item \lstinline{PT_YIELD}~-- выполняет переключение контекста, поток продолжит работу начиная место вызова этого примитива.
-    \item \lstinline{PT_SPAWN}~-- выполняет запуск дочернего потока и ожидает его завершения.
+    \item \lstinline{PT_INIT} -- инициализирует поток;
+    \item \lstinline{PT_BEGIN} -- объявляет начало потока, данный примитив выполняет возобновление контекста(т.е. переход в то место процесса, где было совершено переключение контекста);
+    \item \lstinline{PT_END} -- объявляет завершение потока;
+    \item \lstinline{PT_WAIT_UNTIL} -- выполняет остановку потока, и ждет, когда условие не станет истинно, в ином случае переключает контекст.
+    \item \lstinline{PT_WAIT_WHILE} -- выполняет остановку потока, и ждет, когда условие истинно, в ином случае переключает контекст.
+    \item \lstinline{PT_RESTART} -- выполняет сброс потока и переключает контекст.
+    \item \lstinline{PT_YIELD} -- выполняет переключение контекста, поток продолжит работу начиная место вызова этого примитива.
+    \item \lstinline{PT_SPAWN} -- выполняет запуск дочернего потока и ожидает его завершения.
 \end{itemize}
 
 В ходе работы появилась необходимость, в расширении возможностей потоков, с целью улучшения читаемости кода,
 поэтому на основе описанных выше примитивов были созданы новые функции управлением потоками:
 
 \begin{itemize}
-    \item \lstinline{PT_SLEEP_*}~-- переводит поток в ожидание на определенное время,
+    \item \lstinline{PT_SLEEP_*} -- переводит поток в ожидание на определенное время,
     вместо <<*>> может быть указано MS либо SEC, что означает, что указанное время передано в миллисекундах или секундах соответственно.
     После истечения времени поток возобновляет работу в месте где произошло переключение контекста;
-    \item \lstinline{PT_WAIT_UNTIL_WITH_TIMEOUT_*}~-- ожидает выполнения пока условия с таймаутом пока оно не станет истинно
+    \item \lstinline{PT_WAIT_UNTIL_WITH_TIMEOUT_*} -- ожидает выполнения пока условия с таймаутом пока оно не станет истинно
     по истечении которого выводится сообщение об истечении времени, вместо <<*>> может быть указано MS либо SEC,
     что означает, что указанное время передано в миллисекундах или секундах соответственно;
-    \item \lstinline{PT_WAIT_WHILE_WITH_TIMEOUT_*}~-- ожидает выполнения пока условия с таймаутом пока оно истинно
+    \item \lstinline{PT_WAIT_WHILE_WITH_TIMEOUT_*} -- ожидает выполнения пока условия с таймаутом пока оно истинно
     по истечении которого выводится сообщение об истечении времени, вместо <<*>> может быть указано MS либо SEC,
     что означает, что указанное время передано в миллисекундах или секундах соответственно;
-    \item \lstinline{PT_WAIT_INFINITE}~-- переключает поток в зацикленный режим, необходим для того чтобы процесс был гарантированно остановлен и не мог начать работу заново.
-    \item \lstinline{PT_PARENT_SANITY_CHECK_ALWAYS_N}~-- выполняет проверку истинности условия в родительском потоке,
+    \item \lstinline{PT_WAIT_INFINITE} -- переключает поток в зацикленный режим, необходим для того чтобы процесс был гарантированно остановлен и не мог начать работу заново.
+    \item \lstinline{PT_PARENT_SANITY_CHECK_ALWAYS_N} -- выполняет проверку истинности условия в родительском потоке,
     в случае ложного условия перезапустит поток и выведет сообщение об ошибке.
-    \item \lstinline{PT_CHILD_SANITY_CHECK_ALWAYS_N}~-- выполняет проверку истинности условия в дочернем потоке,
+    \item \lstinline{PT_CHILD_SANITY_CHECK_ALWAYS_N} -- выполняет проверку истинности условия в дочернем потоке,
     в случае ложного условия перезапустит поток и выведет сообщение об ошибке.
 \end{itemize}
 
-\nomenclaturex{SoC}{.}{.}
+\nomenclaturex{SoC}{System on crystal}{система на кристалле}
 
 \subsection{Модуль \modulePerifery}
 %TODO add link to documentation
@@ -124,32 +124,32 @@
 
 Чтобы запустить модуль необходимо его открыть при помощи функции
 \lstinline{magnetoMMC5633NJL_open}. В функцию открытия модуля передаются параметры необходимые для работы модуля, первый из этих параметров
-~-- это адрес дескриптора модуля, описанный в структуре \lstinline{memsLSM6DSO_handle_t}, следующий параметр это дескриптор драйвера шины IIC, необходимый для конфигурации датчика и чтения оттуда данных, и последние два параметра~--
+ -- это адрес дескриптора модуля, описанный в структуре \lstinline{memsLSM6DSO_handle_t}, следующий параметр это дескриптор драйвера шины IIC, необходимый для конфигурации датчика и чтения оттуда данных, и последние два параметра --
 это функция обратного вызова и аргумент передаваемый в эту функцию. Все параметры переданные в функцию открытия модуля сохраняются в дескрипторе магнетометра.
 Помимо этого в функции происходит обнуление буфера требуемых для передачи и приема дынных по шине IIC, происходит инициализация флагов:
 
 \begin{itemize}
-    \item \lstinline{i2cThread.i2cReady}~-- устанавливается в \lstinline{true}, означает, что шина готова принимать и передавать данные;
-    \item \lstinline{isOpened}~-- устанавливается в \lstinline{true}, означает, что модуль начал инициализацию.
-    \item \lstinline{isOpenFinished}~-- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс инициализации.
-    \item \lstinline{isCloseFinished}~-- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс остановки (закрытия).
+    \item \lstinline{i2cThread.i2cReady} -- устанавливается в \lstinline{true}, означает, что шина готова принимать и передавать данные;
+    \item \lstinline{isOpened} -- устанавливается в \lstinline{true}, означает, что модуль начал инициализацию.
+    \item \lstinline{isOpenFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс инициализации.
+    \item \lstinline{isCloseFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс остановки (закрытия).
 \end{itemize}
 
 Далее чтобы начать модулю работать необходимо проинициализировать потоки:
 
 \begin{itemize}
-    \item \lstinline{singleMeasurementPt}~-- дескриптор основного потока \lstinline{magnetoMMC5633NJL_singleMeasurement_thread} в котором модуль читает данные от датчика;
-    \item \lstinline{readIdentifierPt}~-- дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_readIdentifier} для чтения идентификатора датчика;
-    \item \lstinline{selfTestPt}~--  дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_selfTest} для операции самотестирования;
-    \item \lstinline{readBurstBlockingPt}~--  дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_readBurstBlocking} для чтения информации с шины IIC в буфер;
-    \item \lstinline{writeBurstBlockingPt}~--  дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_writeBurstBlocking} для записи информации в датчик;
-    \item \lstinline{softwareResetPt}~--  дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_softwareReset} для программного сброса датчика.
+    \item \lstinline{singleMeasurementPt} -- дескриптор основного потока \lstinline{magnetoMMC5633NJL_singleMeasurement_thread} в котором модуль читает данные от датчика;
+    \item \lstinline{readIdentifierPt} -- дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_readIdentifier} для чтения идентификатора датчика;
+    \item \lstinline{selfTestPt} --  дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_selfTest} для операции самотестирования;
+    \item \lstinline{readBurstBlockingPt} --  дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_readBurstBlocking} для чтения информации с шины IIC в буфер;
+    \item \lstinline{writeBurstBlockingPt} --  дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_writeBurstBlocking} для записи информации в датчик;
+    \item \lstinline{softwareResetPt} --  дескриптор дочернего потока \lstinline{magnetoMMC5633NJL_softwareReset} для программного сброса датчика.
 \end{itemize}
 
 Для окончания инициализации модуля, нужно провести операцию самотестирования с целью определения корректности работы датчика. После данной операции
 будет считаться, что модуль проинициализирован и готов к измерениям, флаг дескриптора магнетометра, \lstinline{isOpenFinished}, установится в \lstinline{true}.
 За это отвечает поток открытия \lstinline{magnetoMMC5633NJL_openFinalize_thread}, вначале, поток ожидает когда модуль начнет инициализацию в вызове \lstinline{magnetoMMC5633NJL_open},
-после установки флага \lstinline{isOpened}~-- устанавливается в \lstinline{true} поток запускает дочерний поток \lstinline{magnetoMMC5633NJL_readIdentifier} 
+после установки флага \lstinline{isOpened} -- устанавливается в \lstinline{true} поток запускает дочерний поток \lstinline{magnetoMMC5633NJL_readIdentifier} 
 при помощи \lstinline{PT_SPAWN}, который вычитывает идентификатор из регистра и сверяет его с тем идентификатором, что определен в документации на датчик.
 
 После завершения чтения идентификатора модуль проверяет статус чтения при помощи \lstinline{PT_PARENT_SANITY_CHECK_ALWAYS_N}. Далее
@@ -159,12 +159,11 @@
 которая происходит в потоке \lstinline{magnetoMMC5633NJL_selfTest}.
 Данный поток сначала считывает данные записанные в регистре для самотестирования \lstinline{MAGNETOMMC5633NJL_ST_START_ADDR},
 далее согласно документации 
-нужно найти 80\% от этих данных и записать их в регистр \lstinline{MAGNETOMMC5633NJL_THR_ST_START_ADDR} после записи в управляющий 
-регистр нужно установить флаги
+нужно найти 80\% от этих данных и записать их в регистр \lstinline{THR_ST_START_ADDR} после записи в управляющий регистр нужно установить флаги
 \lstinline{MAGNET_CONTROL0_TAKE_MEAS_M_MASK | MAGNET_CONTROL0_AUTO_ST_EN_MASK}
-и прочитать регистр \lstinline{MAGNETOMMC5633NJL_STATUS_REG} хранящий статус датчика.
+и прочитать регистр \lstinline{STATUS_REG} хранящий статус датчика.
 Если
-бит \lstinline{MAGNETOMMC5633NJL_SAT_SENSOR_MASK} установлен в ноль, то считается,
+бит \lstinline{SAT_SENSOR_MASK} установлен в ноль, то считается,
 что датчик работает корректно, модуль закончил процесс инициализации и флаг \lstinline{isOpenFinished} устанавливается в \lstinline{true}.
 
 Когда модуль проинициализирован и установлен флаг \lstinline{isOpenFinished} в \lstinline{true}, поток \lstinline{magnetoMMC5633NJL_singleMeasurement_thread},
@@ -187,7 +186,7 @@
     измеренные в один момент времени от двух датчиков;
 \end{itemize}
 
-\nomenclaturex{FIFO}{.}{.}
+\nomenclaturex{FIFO}{First in first out}{очередь с организацией первый вошел первый вышел}
 
 Создание дескриптора для дальнейшей работы драйвера начинается с функции \lstinline{memsLSM6DSO_create}, в
 которой происходит очистка дескриптора, проверка, не было ли создан, данный дескриптор в процессе работы программы.
@@ -198,28 +197,28 @@
 и агрумент этой функции. В функции инициализируются дескрипторы следующих потоков:
 
 \begin{itemize}
-    \item \lstinline{singleMeasurementPt}~-- дескриптор основного потока \lstinline{memsLSM6DSO_singleMeasurement_thread} в котором модуль читает данные от датчика;
-    \item \lstinline{readIdentifierPt}~-- дескриптор дочернего потока \lstinline{memsLSM6DSO_readIdentifier} для чтения идентификатора датчика;
-    \item \lstinline{readBurstBlockingPt}~--  дескриптор дочернего потока \lstinline{memsLSM6DSO_readBurstBlocking} для чтения информации с шины IIC в буфер;
-    \item \lstinline{writeBurstBytePt}~--  дескриптор дочернего потока \lstinline{memsLSM6DSO_readBurstBlocking} для чтения информации с шины IIC в буфер;
-    \item \lstinline{writeBurstBlockingPt}~--  дескриптор дочернего потока \lstinline{memsLSM6DSO_writeBurstBlocking} для записи информации в датчик;
-    \item \lstinline{softwareResetPt}~--  дескриптор дочернего потока \lstinline{memsLSM6DSO_softwareReset} для программного сброса датчика.
+    \item \lstinline{singleMeasurementPt} -- дескриптор основного потока \lstinline{memsLSM6DSO_singleMeasurement_thread} в котором модуль читает данные от датчика;
+    \item \lstinline{readIdentifierPt} -- дескриптор дочернего потока \lstinline{memsLSM6DSO_readIdentifier} для чтения идентификатора датчика;
+    \item \lstinline{readBurstBlockingPt} --  дескриптор дочернего потока \lstinline{memsLSM6DSO_readBurstBlocking} для чтения информации с шины IIC в буфер;
+    \item \lstinline{writeBurstBytePt} --  дескриптор дочернего потока \lstinline{memsLSM6DSO_readBurstBlocking} для чтения информации с шины IIC в буфер;
+    \item \lstinline{writeBurstBlockingPt} --  дескриптор дочернего потока \lstinline{memsLSM6DSO_writeBurstBlocking} для записи информации в датчик;
+    \item \lstinline{softwareResetPt} --  дескриптор дочернего потока \lstinline{memsLSM6DSO_softwareReset} для программного сброса датчика.
 \end{itemize}
 
 Для работы модуля нужно установить следующие флаги:
 
 \begin{itemize}
-    \item \lstinline{fifoHandle.modeFIFO}~-- устанавливается \lstinline{MEMSLSM6DSO_FIFO_MODE_DEFAULT | MEMSLSM6DSO_FIFO_TIMESTAMP_DECIMATION_1},
+    \item \lstinline{fifoHandle.modeFIFO} -- устанавливается \lstinline{FIFO_MODE_DEF},
     означает, что FIFO останавливает прием данных при полном заполнении и устанавливает текущий период записи данных в FIFO;
-    \item \lstinline{fifoHandle.bypassFIFO}~-- устанавливается в \lstinline{MEMSLSM6DSO_FIFO_BYPASS}, означает, что FIFO;
-    \item \lstinline{i2cThread.i2cReady}~-- устанавливается в \lstinline{true}, означает, что шина готова принимать и передавать данные;
-    \item \lstinline{isOpened}~-- устанавливается в \lstinline{true}, означает, что модуль начал инициализацию.
-    \item \lstinline{isOpenFinished}~-- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс инициализации.
-    \item \lstinline{isCloseFinished}~-- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс остановки (закрытия).
+    \item \lstinline{fifoHandle.bypassFIFO} -- устанавливается в \lstinline{FIFO_BYPASS}, означает, что FIFO;
+    \item \lstinline{i2cThread.i2cReady} -- устанавливается в \lstinline{true}, означает, что шина готова принимать и передавать данные;
+    \item \lstinline{isOpened} -- устанавливается в \lstinline{true}, означает, что модуль начал инициализацию.
+    \item \lstinline{isOpenFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс инициализации.
+    \item \lstinline{isCloseFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс остановки (закрытия).
 \end{itemize}
 
 После модулю необходимо завершить инициализацию в потоке \lstinline{memsLSM6DSO_openFinalize_thread}, в котором на старте для проверки вычитывается
-идентификатор датчика ~-- успешно считанный идентификатор говорит о корректной работе устройства. Далее происходит сброс вызовом потока
+идентификатор датчика  -- успешно считанный идентификатор говорит о корректной работе устройства. Далее происходит сброс вызовом потока
 \lstinline{memsLSM6DSO_softwareReset} и последовательно записывается конфигурация устройства, в таблице \ref{table:func:memsConf} описано назначение
 каждого регистра и параметра записываемого в него.
 
@@ -272,7 +271,7 @@
   \end{table}
 
 После успешной конфигурации устройство считается готовым к работе, выставляется флаг \lstinline{isOpenFinished} в \lstinline{true}, и начинает
-работать основной поток \lstinline{memsLSM6DSO_singleMeasurement_thread}. Чтение измерений начинается с записи в регистр \lstinline{MEMSLSM6DSO_FIFO_CTRL4}
+работать основной поток \lstinline{memsLSM6DSO_singleMeasurement_thread}. Чтение измерений начинается с записи в регистр \lstinline{FIFO_CTRL4}
 параметров из дескриптора: \lstinline{fifo.modeFIFO} для начала записи новых данных.
 Чтение из FIFO сначала выполняется чтением статуса, содержащем информацию о размере буфера. После вычитывается регистр меток
 который содержит номер текущей метки и метку о том какие измерения лежат в буфере (акселерометра/гироскопа). 
@@ -290,14 +289,14 @@
 
 \subsubsection{Модуль калибровки магнетометра}
 
-За создание дескриптора модуля отвечает функция \lstinline{businessLayer_calibrationMagnetometerCreate}, внутри происходит обнуление дескриптора,
+За создание дескриптора модуля отвечает функция \lstinline{calibrationMagnetometerCreate}, внутри происходит обнуление дескриптора,
 инициализация потоков и возврат адреса памяти на которую указывает структура. Далее происходит открытие модуля при помощи функции 
-\lstinline{businessLayer_calibrationMagnetometerOpen}. Функция принимает собственно дескриптор \lstinline{businessLayer_calibrationMagnetometer_t},
+\lstinline{calibrationMagnetometerOpen}. Функция принимает собственно дескриптор \lstinline{calibrationMagnetometer_t},
 дескриптор флэш-памяти, сектор памяти куда будут записаны калибровочные параметры, а также функция обратного вызова и ее аргумент, 
 которая связывает модули и позволяет асинхронно передавать данные дальше. Функция собственно сохраняет в дескриптор функцию обратного вызова с ее агрументом,
 а также сохраняет дескритор флэш-памяти вместе с сектором для дальнейшей работы с модулем \moduleFlashMemory. 
 
-Дл чтения параметров из флэш-памяти определены следующие состояния определенные в \lstinline{calibration_flashRequestToReadParameters_t}:
+Дл чтения параметров из флэш-памяти определены следующие состояния определенные в \lstinline{flashRequestToReadParameters_t}:
 
 \begin{enumerate_num}
     \item \lstinline{CALIBRATION_REQUEST_FOR_PARAMETERS} -- Запрос к флэш памяти на чтение данных.
@@ -305,36 +304,36 @@
     \item \lstinline{CALIBRATION_PARAMETERS_WAS_READ_FAIL} -- Чтение завершилось ошибкой (из-за ошибки флэш памяти либо неверного кода crc32).
 \end{enumerate_num}
 
-Работа основного потока модуля определяется состояниями конечного автомата, которые определены в \lstinline{calibration_internalCommands_t} и перечисленны ниже:
+Работа основного потока модуля определяется состояниями конечного автомата, которые определены в \lstinline{internalCommands_t} и перечисленны ниже:
 
 \begin{enumerate_num}
-    \item \lstinline{CALIBRATION_INTERNAL_COMMANDS_APPLY_CALIBRATION} -- Состояние, когда модуль принимает данные от магнетометра и калибрует их своими параметрами.
-    \item \lstinline{CALIBRATION_INTERNAL_COMMANDS_RECALIBRATE} -- Состояние, когда магнитометр начинает калиброваться.
-    \item \lstinline{CALIBRATION_INTERNAL_COMMANDS_RESET_TO_DEFAULTS} -- Состояние, когда модуль не смог вычитать параметры из флэш памяти, и читает стандартные.
-    \item \lstinline{CALIBRATION_INTERNAL_COMMANDS_RECALIBRATE_CANCEL} -- Пришла команда на отмену калибровки модуля.
+    \item \lstinline{CALIBRATION_APPLY_CALIBRATION} -- Состояние, когда модуль принимает данные от магнетометра и калибрует их своими параметрами.
+    \item \lstinline{CALIBRATION_RECALIBRATE} -- Состояние, когда магнитометр начинает калиброваться.
+    \item \lstinline{CALIBRATION_RESET_TO_DEFAULTS} -- Состояние, когда модуль не смог вычитать параметры из флэш памяти, и читает стандартные.
+    \item \lstinline{CALIBRATION_RECALIBRATE_CANCEL} -- Пришла команда на отмену калибровки модуля.
 \end{enumerate_num}
 
 Так как модуль получает асинхронно данные от модулей \modulePerifery~и \moduleFlashMemory , то в себе модуль имеет реализации функций обратного вызова для соответствующих модулей.
-Реализация обратного вызова для \modulePerifery~ориентирована на получение данных от драйвера магнетометра и обращается к структуре \lstinline{calibration_magnetoCb_t},
-в которой перечисленны данные от магнетометра в структуре \lstinline{businessLayer_calibrationMagnetometerInputMeasurements_t}, флаг того что данные были вычитаны \lstinline{magnetoWasRead}.
-и код ошибки магнетометра \lstinline{error}. Данная структура является атрибутом дескриптора. Функция обратного вызова \lstinline{businessLayer_calibrationMagnetometerCallback} 
+Реализация обратного вызова для \modulePerifery~ориентирована на получение данных от драйвера магнетометра и обращается к структуре \lstinline{magnetoCb_t},
+в которой перечисленны данные от магнетометра в структуре \lstinline{calibrationMagnetometerInputMeasurements_t}, флаг того что данные были вычитаны \lstinline{magnetoWasRead}.
+и код ошибки магнетометра \lstinline{error}. Данная структура является атрибутом дескриптора. Функция обратного вызова \lstinline{calibrationMagnetometerCallback} 
 со стороны модуля калибровки магнетометра ожидает получение своего дескриптора, и кода ошибки. В функции устанавливаются флаг и данные от магнетометра.
 
-Для связи с модулем \moduleFlashMemory~ используется обратный вызов \lstinline{calibration_flashCb}, данный обратный вызов ожидает получить дескриптор модуля калибровки магнетометра, код ошибки,
+Для связи с модулем \moduleFlashMemory~ используется обратный вызов \lstinline{flashCb}, данный обратный вызов ожидает получить дескриптор модуля калибровки магнетометра, код ошибки,
 и количество прочитанных байт. Для хранения информации от обратного вызова модуль содержит структуру с данными, которые получает функция, а также устанавливает флаг \lstinline{flashIsReady}.
 
-Главный поток работает по состояниям из \lstinline{calibration_flashRequestToReadParameters_t} и \lstinline{calibration_internalCommands_t}. И зависимости от состояний
-поток вычитывает дынные из флэш памяти используя дочерний поток \lstinline{calibration_readParametersFromFlash}, который вычитывает данные и проверяет их корректность,
+Главный поток работает по состояниям из \lstinline{flashRequestToReadParameters_t} и \lstinline{internalCommands_t}. И зависимости от состояний
+поток вычитывает дынные из флэш памяти используя дочерний поток \lstinline{readParametersFromFlash}, который вычитывает данные и проверяет их корректность,
 либо ожидает данные от магнитометра и применяет калибровочные параметры и вызывает функцию обратного вызова другого модуля, где в качестве аргумента передает откалиброванные измерения,
-либо обрабатывает команду на калибровку, генерируя дочерний поток \lstinline{calibration_recalibrateCommandRoutine}, либо останавливает поток по команде, либо сбрасывает параметры инициализируя модуль
+либо обрабатывает команду на калибровку, генерируя дочерний поток \lstinline{recalibrateCommandRoutine}, либо останавливает поток по команде, либо сбрасывает параметры инициализируя модуль
 стандартными определенными параметрами.
 
 Состояние \lstinline{CALIBRATION_REQUEST_FOR_PARAMETERS} является для модуля начальным, модуль может перейти в состояние \lstinline{CALIBRATION_PARAMETERS_WAS_READ_SUCCESS} и в процессе работы это состояние
 будет для модуля конечным по части работы с модулем \moduleFlashMemory, либо в состояние \lstinline{CALIBRATION_PARAMETERS_WAS_READ_FAIL},
-в котором модуль перейдет в состояние \lstinline{CALIBRATION_INTERNAL_COMMANDS_RESET_TO_DEFAULTS}, и вычитает стандартные
-параметры и перейдет в состояние модуля калибровки данных от модуля калибровки магнитометра: \lstinline{CALIBRATION_INTERNAL_COMMANDS_APPLY_CALIBRATION}.
-Если поступит команда на калибровку, то модуль переключится в состояние \lstinline{CALIBRATION_INTERNAL_COMMANDS_RECALIBRATE}, после которого модуль в любом случае переключится в состояние
-\lstinline{CALIBRATION_INTERNAL_COMMANDS_APPLY_CALIBRATION}.
+в котором модуль перейдет в состояние \lstinline{CALIBRATION_RESET_TO_DEFAULTS}, и вычитает стандартные
+параметры и перейдет в состояние модуля калибровки данных от модуля калибровки магнитометра: \lstinline{CALIBRATION_APPLY_CALIBRATION}.
+Если поступит команда на калибровку, то модуль переключится в состояние \lstinline{CALIBRATION_RECALIBRATE}, после которого модуль в любом случае переключится в состояние
+\lstinline{CALIBRATION_APPLY_CALIBRATION}.
 
 \subsubsection{Модуль калибровки акселерометра}
 
@@ -347,16 +346,16 @@
 Для работы модуля также необходимы состояния, которые используются в потоке и определены в \lstinline{calibrationAccelerometer_internalCommands_t}:
 
 \begin{enumerate_num}
-    \item \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_APPLY_CALIBRATION} -- Стандартное состояние калибровки входных данных.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_RECALIBRATE} -- Состояние в котором прибор начинает операцию калибровки.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_WAIT_NEW_POS} -- Ожидание установки нового определенного положения.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_SET_POS} -- Сбор данных на установленной позиции.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_RESET_TO_DEFAULTS} -- Сброс калибровочных параметров.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_RECALIBRATE_CANCEL} -- Отмена калибровки прибора.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_APPLY_CALIBRATION} -- Стандартное состояние калибровки входных данных.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_RECALIBRATE} -- Состояние в котором прибор начинает операцию калибровки.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_WAIT_NEW_POS} -- Ожидание установки нового определенного положения.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_SET_POS} -- Сбор данных на установленной позиции.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_RESET_TO_DEFAULTS} -- Сброс калибровочных параметров.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_RECALIBRATE_CANCEL} -- Отмена калибровки прибора.
 \end{enumerate_num}
 
 В случае калибровки, необходимо определять положение прибора, в документации к использованию прибора приведена последовательность положений прибора,
-в программной части идет такая же последовательность и описана в \lstinline{businessLayer_calibrationAccelerometerStates_t}:
+в программной части идет такая же последовательность и описана в \lstinline{calibrationAccelerometerStates_t}:
 
 \begin{enumerate_num}
     \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_Z_UP} -- Описывает положение осью Z вверх.
@@ -375,24 +374,24 @@
 то что модуль требователен к взаимодействию с пользователем и проверкой корректности
 установки нового положения. Данный модуль не отвечает за это, в его случае требуется только знать о том, что состояние было установлено. Ответственность
 за правильную последовательность отводится модулю \moduleCalibControl . Это было сделано для удобного использования управлением калибровкой устройства по
-UART через один управляющий модуль. Управление за входящие сообщения об установке новой позиции принимает \lstinline{businessLayer_calibrationAccelerometerPositionWasSetCb},
+UART через один управляющий модуль. Управление за входящие сообщения об установке новой позиции принимает \lstinline{calibrationAccelerometerPositionWasSetCb},
 он отслеживает три состояния в котором находится калибровка:
 
 \begin{itemize}
-    \item \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_RECALIBRATE} -- в данном состоянии модуль начинает калибровку, то есть предполагается, модуль находится в начальном положении;
-    \item \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_WAIT_NEW_POS} -- в данном случае модуль устанавливает новую позицию;
-    \item \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_SET_POS} -- в данном случае прерывается текущий сбор данных и происходит переключение в следующую позицию.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_RECALIBRATE} -- в данном состоянии модуль начинает калибровку, то есть предполагается, модуль находится в начальном положении;
+    \item \lstinline{CALIBRATION_ACCELEROMETER_WAIT_NEW_POS} -- в данном случае модуль устанавливает новую позицию;
+    \item \lstinline{CALIBRATION_ACCELEROMETER_SET_POS} -- в данном случае прерывается текущий сбор данных и происходит переключение в следующую позицию.
 \end{itemize}
 
 
 Каждое изменение состояния отслеживает основной поток, первое, что делает поток в начале работы -- читает параметры из флэш памяти и после успешного прочтения переходит в состояние
-\lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_APPLY_CALIBRATION}, если же параметры были вычитаны неверные, то поток переходит в состояние
-\lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_RESET_TO_DEFAULTS}, сбрасывает значения и записывает их обратно во флэш память, после переходит обратно в состояние
-\lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_APPLY_CALIBRATION}. По приходу команды \lstinline{CALIBRATION_ACCELEROMETER_COMMANDS_RECALIBRATE}, поток только
+\lstinline{CALIBRATION_ACCELEROMETER_APPLY_CALIBRATION}, если же параметры были вычитаны неверные, то поток переходит в состояние
+\lstinline{CALIBRATION_ACCELEROMETER_RESET_TO_DEFAULTS}, сбрасывает значения и записывает их обратно во флэш память, после переходит обратно в состояние
+\lstinline{CALIBRATION_ACCELEROMETER_APPLY_CALIBRATION}. По приходу команды \lstinline{CALIBRATION_ACCELEROMETER_RECALIBRATE}, поток только
 собирает данные.
 После получения измерений всех позиций модуль переходит в состояние \lstinline{CALIBRATION_ACCELEROMETER_POSITION_FINISH} и поток начинает рассчитывать калибровочные параметры в функции 
 \lstinline{calibrationAccelerometer_calculateScaleParameters}, где алгоритм формирует матрицу ожидаемых состояний при помощи
-\lstinline{calibrationAccelerometer_constructExpectedValueMatrix} и производит операции описанные в \ref{sec:domain}.
+\lstinline{calibrationAccelerometer_constructExpectedValueMatrix} и производит операции описанные в разделе \ref{sec:domain}.
 
 \subsubsection{Модуль калибровки гироскопа}
 
@@ -409,7 +408,7 @@ UART через один управляющий модуль. Управлени
 калибровку если такой запрос появляется.
 
 Функция создания дескриптора обнуляет дескриптор и возвращает адрес памяти обновленного дескриптора, далее следует открыть модуль функцией
-\lstinline{businessLayer_calibrationManagerOpen} которая принимает дескрипторы модулей калибровки датчиков.
+\lstinline{calibrationManagerOpen} которая принимает дескрипторы модулей калибровки датчиков.
 
 Команда, которая приходит на калибровку устройства является пакетом содержащая такую информацию как цель калибровки и состояние калибровки.
 Приходящие команды от модуля UART, проверяются на то что запрос пришел не во время калибровки в функции \lstinline{isAttemptToStartNewCalibrationWhileOtherIsInProgress}.
@@ -418,28 +417,28 @@ UART через один управляющий модуль. Управлени
 Состояния калибровки сделаны следующие:
 
 \begin{itemize}
-    \item \lstinline{GENERAL_CALIBRATION_STATE_START} -- состояние начала калибровки;
-     \item \lstinline{GENERAL_CALIBRATION_STATE_FINISH} -- состояние определяющее, что калибровка закончена успешно;
-     \item \lstinline{GENERAL_CALIBRATION_STATE_ERROR} -- состояние определяющее, что калибровка закончена с ошибкой;
-     \item \lstinline{GENERAL_CALIBRATION_STATE_Z_UP} -- целевое состояние калибровки акселерометра осью Z вверх;
-     \item \lstinline{GENERAL_CALIBRATION_STATE_Z_DOWN} -- целевое состояние калибровки акселерометра осью Z вниз; 
-     \item \lstinline{GENERAL_CALIBRATION_STATE_Y_UP} -- целевое состояние калибровки акселерометра осью Y вверх; 
-     \item \lstinline{GENERAL_CALIBRATION_STATE_Y_DOWN} -- целевое состояние калибровки акселерометра осью Y вниз; 
-     \item \lstinline{GENERAL_CALIBRATION_STATE_X_UP} -- целевое состояние калибровки акселерометра осью X вверх; 
-     \item \lstinline{GENERAL_CALIBRATION_STATE_X_DOWN} -- целевое состояние калибровки акселерометра осью X вниз; 
+    \item \lstinline{GENERAL_CALIBRATION_START} -- состояние начала калибровки;
+     \item \lstinline{GENERAL_CALIBRATION_FINISH} -- состояние определяющее, что калибровка закончена успешно;
+     \item \lstinline{GENERAL_CALIBRATION_ERROR} -- состояние определяющее, что калибровка закончена с ошибкой;
+     \item \lstinline{GENERAL_CALIBRATION_Z_UP} -- целевое состояние калибровки акселерометра осью Z вверх;
+     \item \lstinline{GENERAL_CALIBRATION_Z_DOWN} -- целевое состояние калибровки акселерометра осью Z вниз; 
+     \item \lstinline{GENERAL_CALIBRATION_Y_UP} -- целевое состояние калибровки акселерометра осью Y вверх; 
+     \item \lstinline{GENERAL_CALIBRATION_Y_DOWN} -- целевое состояние калибровки акселерометра осью Y вниз; 
+     \item \lstinline{GENERAL_CALIBRATION_X_UP} -- целевое состояние калибровки акселерометра осью X вверх; 
+     \item \lstinline{GENERAL_CALIBRATION_X_DOWN} -- целевое состояние калибровки акселерометра осью X вниз; 
 \end{itemize}
 
 Выбор устройства калибровки происходит в функции \lstinline{serveCalibration}, здесь, исходя из цели калибровки выбирается нужное. Далее если запрос не
 перекрывает другие калибровки то, в случае с магнетометром и гироскопом, вызываются функции запуска калибровки: \lstinline{serveMagnetCalibration},
-\lstinline{serveGyroCalibration}, их состояния определяются в начале как \lstinline{GENERAL_CALIBRATION_STATE_START} и так как калибровка происходит за один раз
-то следующим успешным состоянием является \lstinline{GENERAL_CALIBRATION_STATE_FINISH}. В каждой из функции \lstinline{serveMagnet<*>}, происходит вызов соответствующих
+\lstinline{serveGyroCalibration}, их состояния определяются в начале как \lstinline{GENERAL_CALIBRATION_START} и так как калибровка происходит за один раз
+то следующим успешным состоянием является \lstinline{GENERAL_CALIBRATION_FINISH}. В каждой из функции \lstinline{serveMagnet<*>}, происходит вызов соответствующих
 функций согласно их API, так как функции вызова калибровки являются асинхронными то в них передается обратный вызов (для каждого вызова отдельная функция).
-В случае с акселерометром все усложняется из-за способа калибровки, первое, с чего начинается калибровка -- с состояния \lstinline{GENERAL_CALIBRATION_STATE_START} и
+В случае с акселерометром все усложняется из-за способа калибровки, первое, с чего начинается калибровка -- с состояния \lstinline{GENERAL_CALIBRATION_START} и
 сообщения модулю калибровки акселерометра о том, то следует перейти в соответствующее состояние. Далее после обработки команды, модуль становится в ожидание получения
 от модуля UART нового пакета с верной целью и правильно установленным состоянием, иначе модуль сообщит об ошибке обратно. Так продолжается итеративно пока не закончатся
-состояния, после завершения модуль модуль переходит в состояние \lstinline{GENERAL_CALIBRATION_STATE_FINISH} и ожидает поступления новых запросов.
+состояния, после завершения модуль модуль переходит в состояние \lstinline{GENERAL_CALIBRATION_FINISH} и ожидает поступления новых запросов.
 
-Также предусмотрен случай отмены какой либо из калибровок, в данном случае на стороне рассматриваемого модуля меняется состояние в \lstinline{GENERAL_CALIBRATION_STATE_FINISH}.
+Также предусмотрен случай отмены какой либо из калибровок, в данном случае на стороне рассматриваемого модуля меняется состояние в \lstinline{GENERAL_CALIBRATION_FINISH}.
 А исходя из текущей обслуживаемой цели выбирается та цель на которую пришел запрос на отмену вместе с вызовом из API функции отмены.
 
 \subsection{Модуль \moduleUart}
@@ -474,10 +473,10 @@ UART через один управляющий модуль. Управлени
 
 Пакет данных размером 2 байта представляет из себя цель калибровки и состояние калибровки, протокол так же определяет состояния, так как устройствам снаружи необходимо это знать.
 
-После проверки размера и длины входящего пакета модуль выполняет команду \lstinline{CMD_GENERAL_CALIBRATION}, вызывая \lstinline{businessLayer_calibrationManagerServeRequestAsync},
+После проверки размера и длины входящего пакета модуль выполняет команду \lstinline{CMD_GENERAL_CALIBRATION}, вызывая \lstinline{calibrationManagerServeRequestAsync},
 куда и передается полезная нагрузка пакета, в частности цель и статус, а также обратный вызов, необходимый для получения ответа от модуля \moduleCalibControl.
 Также предусмотрено обработка ошибки, в этом случе будет отправлен пакет с командой
-\lstinline{RESP_GENERAL_CALIBRATION} и с полезной нагрузкой, где цель равна запрашиваемой цели, а состояние отмечено как \lstinline{GENERAL_CALIBRATION_STATE_ERROR}.
+\lstinline{RESP_GENERAL_CALIBRATION} и с полезной нагрузкой, где цель равна запрашиваемой цели, а состояние отмечено как \lstinline{GENERAL_CALIBRATION_ERROR}.
 
 В случае успешной калибровки, или шага калибровки модуль \moduleCalibControl вызывает обратный вызов \lstinline{calibrationManagerCallback}, который передает команду 
 \lstinline{RESP_GENERAL_CALIBRATION} и данные в виде текущей цели и статуса (положение прибора в пространстве или успешное завершение).
@@ -487,12 +486,68 @@ UART через один управляющий модуль. Управлени
 
 Все отправляемые команды записываются в очередь, которая опрашивается в потоке \lstinline{mcuCommProt_writeDataIfNeed} и далее отправляются по UART далее.
 
+\subsection{Модуль \moduleOrientationAzimuth}
+
+Данный модуль реализует в себе использование фильтра Мэджвика, поправку на наклонение устройства и учет магнитного наклонения.
+В работе данный алгоритм проверяет одновременно ли получены данные от акселерометра, гироскопа и магнетометра -- это важно для алгоритма Мэджвика.
+После вычисляет все необходимые параметры, такие как азимут и ориентацию в пространстве. 
+
+Модуль начинает работу с создания дескриптора, таким же способом как это было описано ранее. В функции инициализации модуля
+функция принимает обратный вызов который связывает рассматриваемый модуль вместе с модулями поиска цели и отображения на экране.
+Во время инициализации происходит настройка фильтра Мэджвика, и пометка невалидности всех данных (чтобы поток не вернул неверные данные в начале работы).
+
+За прием данных от модулей калибровки отвечают функции:
+\begin{itemize}
+    \item \lstinline{updateAccelerometerMeasurements} -- проверяет корректность данных акселерометра и обновляет внутренний дескриптор входящими данными;
+    \item \lstinline{updateGyroscopeMeasurements} -- проверяет корректность данных гироскопа и обновляет внутренний дескриптор входящими данными;
+    \item \lstinline{updateGPSMeasurements} -- проверяет корректность данных GPS и обновляет внутренний дескриптор входящими данными;
+    \item \lstinline{updateMagnetometerMeasurements} -- проверяет корректность данных магнетометра и обновляет внутренний дескриптор входящими данными.
+\end{itemize}
+
+
+В процессе работы потока проверяется, пришли ли новые данные в функции \lstinline{isTimeToUpdateAlgorithm}, в которой также проверяется были получены данные в
+одно время. Если данные были получены, то требуется обновить данные фильтра Мэджвика. После обновления можно получить новые данные с поправками, которые в функции
+\lstinline{computeTiltCompensation} рассчитывают компенсацию на наклонения прибора, в \lstinline{computeDeclination} рассчитывают  магнитное наклонение, в функции
+\lstinline{computeDevicePosition} высчитывают ориентацию прибора в пространстве переводя данные из кватернионов в углы Эйлера.
+
 \subsection{Модуль \moduleMoveDetect}
 
-\subsection{Модуль \moduleOrientationAzimuth}
+Данный модуль отвечает за определение вращательного движения пользователем, целью реализации данного модуля состоит в том чтобы решить проблему случайных движений не
+приводящих к появлению случайных событий. Для этого был рассчитан и реализован БИХ ФНЧ по формуле из \ref{sec:domain}. Особенность реализации данного фильтра состоит в том,
+что он содержит необходимые задержи во время движения, отсекая тем самым резкие и случайные движения во время работы с приором. 
+
+Реализация состоит из создания дескриптора, его инициализации функцией \lstinline{deviceMoveDetectorOpen} вместе с параметром обратного вызова от модуля
+отображения.
+
+Для определения текущего состояние используются следующие перечисления:
+
+\begin{itemize}
+    \item -- \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_MOVE} -- определяет, что прибор находится в движении;
+    \item -- \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_NOT_MOVE} -- определяет, что прибор не движется; 
+    \item -- \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_INITIALIZATION} -- определяет, что прибор находится в стадии инициализации.
+\end{itemize}
+
+В начале работы фильтр находится в состоянии \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_INITIALIZATION} и основной поток вызывает функцию
+\lstinline{deviceMoveDetectorFilterStep}, в которой происходит обновление фильтра пока данные не станут стабильные.
+После этого поток может находится в двух состояниях \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_MOVE} и \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_NOT_MOVE}.
+За определение перемещения отвечает функция \lstinline{deviceMoveDetectorRecognizeState}, которая вызывается в потоке после состояния инициализации.
+Внутри ее перебираются значения для каждой оси вычисляются обновленные фильтром значения. Функция \lstinline{deviceMoveDetectorIIRFilter} реализует в себе
+БИХ ФНЧ. В случае если результат превышает порог заданный в \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_GYRO_THRESHOLD}, то отправляется состояние \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_MOVE}.
 
 \subsection{Модуль \moduleFindTarget}
 
-\subsection{Модуль \moduleFlashMemory}
+Данный модуль принимает информацию о азимуте от модуля \moduleOrientationAzimuth, 
+текущей позиции и позиции цели от модуля \moduleUart, функция инициализации устанавливает все состояния цели на экране как невалидные
+целью, чтобы при старте потока отображения не было не правильной информации на экране. 
 
-\subsection{Модуль \moduleGraphics}
+Для расчета позиции цели используется функция поиска разницы азимутов используя позиции цели и устройства. На основе данной разницы
+определяется текущее поле зрения прибора пересчитанное в дискретной области экрана, то есть на какой позиции экрана находится цель.
+После определения определяется положение стрелки для отображения на экране:
+
+\begin{itemize}
+\item \lstinline{BUSINESSLAYER_GRAPHICS_FIND_TARGET_LEFT} -- определяет, что прибор нужно повернуть влево для того чтобы обнаружить цель;
+\item \lstinline{BUSINESSLAYER_GRAPHICS_FIND_TARGET_RIGHT} -- определяет, что прибор нужно повернуть вправо для того чтобы обнаружить цель; 
+\item \lstinline{BUSINESSLAYER_GRAPHICS_FIND_TARGET_CENTER} -- определяет, что цель цель находится в пределах экрана, поток отображения в данном случае буде использовать
+вычисленные координаты на экране.
+\end{itemize}
+                                                
