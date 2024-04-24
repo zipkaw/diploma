@@ -58,7 +58,7 @@
 % Зачем: Настраивает отступы от границ страницы.
 % Почему: Пункт 2.1.2 Требований по оформлению пояснительной записки.
 %% Специфические к используемому принтеру + ОС
-\usepackage[left=3cm,top=1.9cm,right=1.5cm,bottom=2.0cm]{geometry}
+\usepackage[a4paper, left=30mm,top=20mm,right=15mm,bottom=20mm]{geometry}
 % \usepackage[left=3cm,top=1.9cm,right=1.5cm,bottom=2.795cm, showframe]{geometry}
 % Стандарт для магистерской
 % \usepackage[left=3cm,top=1.9cm,right=1.0cm,bottom=2.095cm]{geometry}
@@ -84,6 +84,8 @@
 % Почему: Так не принято делать в текстах на русском языке.
 \frenchspacing
 
+\usepackage{amssymb}
+\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
 
 % Зачем: Сброс счетчика сносок для каждой страницы
 % Примечание: в "Требованиях по оформлению пояснительной записки" не указано, как нужно делать, но в других БГУИРовских документах рекомендуется нумерация отдельная для каждой страницы
@@ -265,8 +267,8 @@
   \printdate{\myDay}{\myMonth}{\myYear}%
 }
 
-\def\BibUrlRus#1{Режим доступа~: \url{#1}}
-\def\BibDateRus#1{Дата доступа~: \parsedate{#1}}
+\def\BibUrlRus#1{Режим доступа: \url{#1}}
+\def\BibDateRus#1{Дата доступа: \parsedate{#1}}
 \def\BibTitleSuffixRus{ [Электронный ресурс]}
 % Используем русский текст в английских источниках
 \def\BibUrl#1{\BibUrlRus{#1}}
@@ -315,7 +317,7 @@
 
 % Зачем: Задание подписей, разделителя и нумерации частей рисунков
 % Почему: Пункт 2.5.5 Требований по оформлению пояснительной записки.
-\DeclareCaptionLabelFormat{stbfigure}{\\Рисунок \arabic{section}.\arabic{figure}}
+\DeclareCaptionLabelFormat{stbfigure}{\\\vspace{\baselineskip}Рисунок \arabic{section}.\arabic{figure}}
 \DeclareCaptionLabelFormat{stbsubfigure}{\\\asbuk{subfigure})}
 \DeclareCaptionLabelFormat{stbtable}{Таблица \arabic{section}.\arabic{table}}
 \DeclareCaptionLabelSeparator{stb}{~--~}
@@ -409,6 +411,13 @@
     leftmargin=*, itemindent=*]}
   {\end{enumerate}}
 
+% Зачем: добавление возможности создания нумерованного списка без точки (1 2 3 ...)
+\newenvironment{enumerate_numx}
+  {\begin{enumerate}[label=\arabic*, ref=\arabic*, align=left,
+    labelindent=\fivecharsapprox,
+    leftmargin=*, itemindent=*]}
+  {\end{enumerate}}
+
 % Зачем: добавление возможности создания нумерованного списка по шагам
 \newenvironment{enumerate_step}
   {\begin{enumerate}[label=Шаг \arabic*., ref=\arabic*,
@@ -443,7 +452,7 @@
 
 \let\oldequation=\equation
 \let\endoldequation=\endequation
-\renewenvironment{equation}{\vspace{-0.3em}\begin{oldequation}}{\end{oldequation}\vspace{-0.9em}}
+\renewenvironment{equation}{\vspace{0em}\begin{oldequation}}{\end{oldequation}\vspace{0em}}
 
 % Зачем: Дополнительные возможности в форматировании таблиц
 \usepackage{makecell}
@@ -804,7 +813,7 @@
 
 % Зачем: Задает стиль библиографии
 % Почему: Пункт 2.8.6 Требований по оформлению пояснительной записки.
-\bibliographystyle{\rootPathPrefix styles/belarus-specific-utf8gost780u}
+% \bibliographystyle{belarus-specific-utf8gost780u}
 % Только для магистратуры
 % \bibliographystyleMy{\rootPathPrefix styles/belarus-specific-utf8gost780u}
 
@@ -821,6 +830,7 @@
 
 % Зачем: использовать для исправления большого отступа между таблицей и подзаголовком
 \newcommand{\fixTableSectionSpace}{\vspace{-1em}}
+\newcommand{\fixSectionSpace}{\vspace{-1em}}
 
 % Зачем: подавление висячих строк
 \clubpenalty=10000
@@ -836,3 +846,8 @@
 % Зачем: добавляем пользовательские константы конфигурации
 % Всегда располагаем в конце для использования всех плагинов
 \input{\rootPathPrefix cfg}
+
+
+
+
+
