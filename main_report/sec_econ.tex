@@ -73,7 +73,7 @@
 составляет $ \num\valPremiaPercent \ \% $ от размера основной заработной платы.
 Расчет затрат
 на основную заработную плату команды разработчиков представлен
-в таблице~\ref{table:econ:calc_zar_plata}.
+в таблице~\ref{table:econ:calc_zar_plata}. \\
 
 \FPeval{\valZchProger}{round(2584, \configRoundSigns)}
 \FPeval{\valHourProger}{clip(\valZchProger / \valtMonth)}
@@ -150,6 +150,7 @@
 Для расчета затрат на дополнительную заработную плату разработчиков воспользуемся
 следующей формулой:
 
+
 \begin{equation}
   \label{eq:econ:Zd}
   \text{З}_\text{д} = \frac{\text{З}_\text{о} \cdot \text{Н}_\text{д}}
@@ -213,9 +214,8 @@ $ \num\valNdPercent \ \% $.
   \text{З}_\text{р} = \text{З}_\text{о} + \text{З}_\text{д}
     + \text{Р}_\text{соц} + \text{Р}_\text{пр}.
 \end{equation}
-
 \FPeval{\valZr}{round(\valZo + \valZd + \valRSots + \valRPr, \configRoundSigns)}
-
+\fixSectionSpace
 \subsubsection{Расчет плановой прибыли}
 
 \FPeval{\valRPsPercent}{37}
@@ -469,6 +469,7 @@ $ \text{Э}_\text{тек} = \text{Э}_\text{з.п} = \num\valETek \rubFormula $
   \text{Р}_\text{и} = \frac{\num\valDeltaPCh}{\num\valZr}
     \cdot 100 = \num\valRi \ \%.
 \end{equation}
+\fixSectionSpace
 
 \subsubsection{Расчет показателей экономической эффективности для организации-заказчика}
 
@@ -503,7 +504,9 @@ $ \num\valNdsPercent \ \% $.
     \cdot \bigl( 1 + \frac{\num\valNdsPercent}{100} \bigr) }
     \cdot 100 = \num\valTargetRi \ \%.
 \end{equation}
-
+\fixSectionSpace
+\fixSectionSpace
+\fixSectionSpace
 \subsection{Вывод об экономической эффективности}
 
 В результате технико-экономического обоснования был произведен расчет инвестиций

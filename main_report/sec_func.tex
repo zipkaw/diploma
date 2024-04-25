@@ -41,7 +41,7 @@
     \item \lstinline{*_OK} -- код успешного завершения функции;
     \item \lstinline{*_ERROR_UNKNOWN} -- код в случае, если ошибка не установлена, например, 
     такой код возврата может быть, в случае неопределенного поведения как исполняемого модуля, так и внешнего;
-    \item \lstinline{*_ERROR_INVALID_ARGUMENT} -- код, если был подан неверный аргумент в функцию;
+    \item \lstinline{*_ERROR_INVALID_ARGUMENT} -- код, если был подан неверный аргумент в функцию.
 \end{itemize}
 
 Остальные ошибки зависящие от реализации конкретного модуля определены в его открытом API, и содержат подробное описание ошибки.
@@ -78,10 +78,10 @@
     \item \lstinline{PT_INIT} -- инициализирует поток;
     \item \lstinline{PT_BEGIN} -- объявляет начало потока, данный примитив выполняет возобновление контекста(т.е. переход в то место процесса, где было совершено переключение контекста);
     \item \lstinline{PT_END} -- объявляет завершение потока;
-    \item \lstinline{PT_WAIT_UNTIL} -- выполняет остановку потока, и ждет, когда условие не станет истинно, в ином случае переключает контекст.
-    \item \lstinline{PT_WAIT_WHILE} -- выполняет остановку потока, и ждет, когда условие истинно, в ином случае переключает контекст.
-    \item \lstinline{PT_RESTART} -- выполняет сброс потока и переключает контекст.
-    \item \lstinline{PT_YIELD} -- выполняет переключение контекста, поток продолжит работу начиная место вызова этого примитива.
+    \item \lstinline{PT_WAIT_UNTIL} -- выполняет остановку потока, и ждет, когда условие не станет истинно, в ином случае переключает контекст;
+    \item \lstinline{PT_WAIT_WHILE} -- выполняет остановку потока, и ждет, когда условие истинно, в ином случае переключает контекст;
+    \item \lstinline{PT_RESTART} -- выполняет сброс потока и переключает контекст;
+    \item \lstinline{PT_YIELD} -- выполняет переключение контекста, поток продолжит работу начиная место вызова этого примитива;
     \item \lstinline{PT_SPAWN} -- выполняет запуск дочернего потока и ожидает его завершения.
 \end{itemize}
 
@@ -98,9 +98,9 @@
     \item \lstinline{PT_WAIT_WHILE_WITH_TIMEOUT_*} -- ожидает выполнения пока условия с таймаутом пока оно истинно
     по истечении которого выводится сообщение об истечении времени, вместо <<*>> может быть указано MS либо SEC,
     что означает, что указанное время передано в миллисекундах или секундах соответственно;
-    \item \lstinline{PT_WAIT_INFINITE} -- переключает поток в зацикленный режим, необходим для того чтобы процесс был гарантированно остановлен и не мог начать работу заново.
+    \item \lstinline{PT_WAIT_INFINITE} -- переключает поток в зацикленный режим, необходим для того чтобы процесс был гарантированно остановлен и не мог начать работу заново;
     \item \lstinline{PT_PARENT_SANITY_CHECK_ALWAYS_N} -- выполняет проверку истинности условия в родительском потоке,
-    в случае ложного условия перезапустит поток и выведет сообщение об ошибке.
+    в случае ложного условия перезапустит поток и выведет сообщение об ошибке;
     \item \lstinline{PT_CHILD_SANITY_CHECK_ALWAYS_N} -- выполняет проверку истинности условия в дочернем потоке,
     в случае ложного условия перезапустит поток и выведет сообщение об ошибке.
 \end{itemize}
@@ -130,8 +130,8 @@
 
 \begin{itemize}
     \item \lstinline{i2cThread.i2cReady} -- устанавливается в \lstinline{true}, означает, что шина готова принимать и передавать данные;
-    \item \lstinline{isOpened} -- устанавливается в \lstinline{true}, означает, что модуль начал инициализацию.
-    \item \lstinline{isOpenFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс инициализации.
+    \item \lstinline{isOpened} -- устанавливается в \lstinline{true}, означает, что модуль начал инициализацию;
+    \item \lstinline{isOpenFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс инициализации;
     \item \lstinline{isCloseFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс остановки (закрытия).
 \end{itemize}
 
@@ -213,8 +213,8 @@
     означает, что FIFO останавливает прием данных при полном заполнении и устанавливает текущий период записи данных в FIFO;
     \item \lstinline{fifoHandle.bypassFIFO} -- устанавливается в \lstinline{FIFO_BYPASS}, означает, что FIFO;
     \item \lstinline{i2cThread.i2cReady} -- устанавливается в \lstinline{true}, означает, что шина готова принимать и передавать данные;
-    \item \lstinline{isOpened} -- устанавливается в \lstinline{true}, означает, что модуль начал инициализацию.
-    \item \lstinline{isOpenFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс инициализации.
+    \item \lstinline{isOpened} -- устанавливается в \lstinline{true}, означает, что модуль начал инициализацию;
+    \item \lstinline{isOpenFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс инициализации;
     \item \lstinline{isCloseFinished} -- устанавливается в \lstinline{false}, означает, что модуль не закончил процесс остановки (закрытия).
 \end{itemize}
 
@@ -301,18 +301,18 @@
 Дл чтения параметров из флэш-памяти определены следующие состояния определенные в \lstinline{flashRequestToReadParameters_t}:
 
 \begin{enumerate_num}
-    \item \lstinline{CALIBRATION_REQUEST_FOR_PARAMETERS} -- Запрос к флэш памяти на чтение данных.
-    \item \lstinline{CALIBRATION_PARAMETERS_WAS_READ_SUCCESS} -- Чтение прошло успешно.
-    \item \lstinline{CALIBRATION_PARAMETERS_WAS_READ_FAIL} -- Чтение завершилось ошибкой (из-за ошибки флэш памяти либо неверного кода crc32).
+    \item \lstinline{CALIBRATION_REQUEST_FOR_PARAMETERS} -- запрос к флэш памяти на чтение данных.
+    \item \lstinline{CALIBRATION_PARAMETERS_WAS_READ_SUCCESS} -- чтение прошло успешно.
+    \item \lstinline{CALIBRATION_PARAMETERS_WAS_READ_FAIL} -- чтение завершилось ошибкой (из-за ошибки флэш памяти либо неверного кода crc32).
 \end{enumerate_num}
 
 Работа основного потока модуля определяется состояниями конечного автомата, которые определены в \lstinline{internalCommands_t} и перечисленны ниже:
 
 \begin{enumerate_num}
-    \item \lstinline{CALIBRATION_APPLY_CALIBRATION} -- Состояние, когда модуль принимает данные от магнетометра и калибрует их своими параметрами.
-    \item \lstinline{CALIBRATION_RECALIBRATE} -- Состояние, когда магнитометр начинает калиброваться.
-    \item \lstinline{CALIBRATION_RESET_TO_DEFAULTS} -- Состояние, когда модуль не смог вычитать параметры из флэш памяти, и читает стандартные.
-    \item \lstinline{CALIBRATION_RECALIBRATE_CANCEL} -- Пришла команда на отмену калибровки модуля.
+    \item \lstinline{CALIBRATION_APPLY_CALIBRATION} -- состояние, когда модуль принимает данные от магнетометра и калибрует их своими параметрами.
+    \item \lstinline{CALIBRATION_RECALIBRATE} -- состояние, когда магнитометр начинает калиброваться.
+    \item \lstinline{CALIBRATION_RESET_TO_DEFAULTS} -- состояние, когда модуль не смог вычитать параметры из флэш памяти, и читает стандартные.
+    \item \lstinline{CALIBRATION_RECALIBRATE_CANCEL} -- пришла команда на отмену калибровки модуля.
 \end{enumerate_num}
 
 Так как модуль получает асинхронно данные от модулей \modulePerifery~и \moduleFlashMemory , то в себе модуль имеет реализации функций обратного вызова для соответствующих модулей.
@@ -348,26 +348,26 @@
 Для работы модуля также необходимы состояния, которые используются в потоке и определены в \lstinline{calibrationAccelerometer_internalCommands_t}:
 
 \begin{enumerate_num}
-    \item \lstinline{CALIBRATION_ACCELEROMETER_APPLY_CALIBRATION} -- Стандартное состояние калибровки входных данных.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_RECALIBRATE} -- Состояние в котором прибор начинает операцию калибровки.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_WAIT_NEW_POS} -- Ожидание установки нового определенного положения.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_SET_POS} -- Сбор данных на установленной позиции.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_RESET_TO_DEFAULTS} -- Сброс калибровочных параметров.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_RECALIBRATE_CANCEL} -- Отмена калибровки прибора.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_APPLY_CALIBRATION} -- стандартное состояние калибровки входных данных.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_RECALIBRATE} -- состояние в котором прибор начинает операцию калибровки.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_WAIT_NEW_POS} -- ожидание установки нового определенного положения.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_SET_POS} -- сбор данных на установленной позиции.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_RESET_TO_DEFAULTS} -- сброс калибровочных параметров.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_RECALIBRATE_CANCEL} -- отмена калибровки прибора.
 \end{enumerate_num}
 
 В случае калибровки, необходимо определять положение прибора, в документации к использованию прибора приведена последовательность положений прибора,
 в программной части идет такая же последовательность и описана в \lstinline{calibrationAccelerometerStates_t}:
 
 \begin{enumerate_num}
-    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_Z_UP} -- Описывает положение осью Z вверх.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_Z_DOWN} -- Описывает положение осью Z вверх.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_Y_UP} -- Описывает положение осью Y вверх.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_Y_DOWN} -- Описывает положение осью Y вверх.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_X_UP} -- Описывает положение осью X вверх.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_X_DOWN} -- Описывает положение осью X вверх.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_FINISH} -- Определяет, что все данные собраны и устройство подсчитывает параметры.
-    \item \lstinline{CALIBRATION_ACCELEROMETER_CALIBRATION_FINISHED} -- Определяет, что параметры были сохранены и записаны в флэш память.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_Z_UP} -- описывает положение осью Z вверх.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_Z_DOWN} -- описывает положение осью Z вверх.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_Y_UP} -- описывает положение осью Y вверх.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_Y_DOWN} -- описывает положение осью Y вверх.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_X_UP} -- описывает положение осью X вверх.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_X_DOWN} -- описывает положение осью X вверх.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_POSITION_FINISH} -- определяет, что все данные собраны и устройство подсчитывает параметры.
+    \item \lstinline{CALIBRATION_ACCELEROMETER_CALIBRATION_FINISHED} -- определяет, что параметры были сохранены и записаны в флэш память.
 \end{enumerate_num}
 
 Состояния для взаимодействия с флэш памятью определены такие же как и в модуле калибровки магнетометра. 
@@ -388,7 +388,7 @@ UART через один управляющий модуль. Управлени
 
 Каждое изменение состояния отслеживает основной поток, первое, что делает поток в начале работы -- читает параметры из флэш памяти и после успешного прочтения переходит в состояние
 \lstinline{CALIBRATION_ACCELEROMETER_APPLY_CALIBRATION}, если же параметры были вычитаны неверные, то поток переходит в состояние
-\lstinline{CALIBRATION_ACCELEROMETER_RESET_TO_DEFAULTS}, сбрасывает значения и записывает их обратно во флэш память, после переходит обратно в состояние
+сброса калибровочных параметров, сбрасывает значения и записывает их обратно во флэш память, после переходит обратно в состояние
 \lstinline{CALIBRATION_ACCELEROMETER_APPLY_CALIBRATION}. По приходу команды \lstinline{CALIBRATION_ACCELEROMETER_RECALIBRATE}, поток только
 собирает данные.
 После получения измерений всех позиций модуль переходит в состояние \lstinline{CALIBRATION_ACCELEROMETER_POSITION_FINISH} и поток начинает рассчитывать калибровочные параметры в функции 
@@ -413,7 +413,7 @@ UART через один управляющий модуль. Управлени
 \lstinline{calibrationManagerOpen} которая принимает дескрипторы модулей калибровки датчиков.
 
 Команда, которая приходит на калибровку устройства является пакетом содержащая такую информацию как цель калибровки и состояние калибровки.
-Приходящие команды от модуля UART, проверяются на то что запрос пришел не во время калибровки в функции \lstinline{isAttemptToStartNewCalibrationWhileOtherIsInProgress}.
+Приходящие команды от модуля UART, проверяются на то что запрос пришел не во время калибровки в функции \lstinline{isAttemptToStartNewCalibration}.
 Для акселерометра проверяются входящие состояния калибровки, что они являются валидными в функции \lstinline{isValidAccelerometerCalibrationState}.
 
 Состояния калибровки сделаны следующие:
@@ -427,7 +427,7 @@ UART через один управляющий модуль. Управлени
      \item \lstinline{GENERAL_CALIBRATION_Y_UP} -- целевое состояние калибровки акселерометра осью Y вверх; 
      \item \lstinline{GENERAL_CALIBRATION_Y_DOWN} -- целевое состояние калибровки акселерометра осью Y вниз; 
      \item \lstinline{GENERAL_CALIBRATION_X_UP} -- целевое состояние калибровки акселерометра осью X вверх; 
-     \item \lstinline{GENERAL_CALIBRATION_X_DOWN} -- целевое состояние калибровки акселерометра осью X вниз; 
+     \item \lstinline{GENERAL_CALIBRATION_X_DOWN} -- целевое состояние калибровки акселерометра осью X вниз.
 \end{itemize}
 
 Выбор устройства калибровки происходит в функции \lstinline{serveCalibration}, здесь, исходя из цели калибровки выбирается нужное. Далее если запрос не
@@ -524,9 +524,9 @@ UART через один управляющий модуль. Управлени
 Для определения текущего состояние используются следующие перечисления:
 
 \begin{itemize}
-    \item -- \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_MOVE} -- определяет, что прибор находится в движении;
-    \item -- \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_NOT_MOVE} -- определяет, что прибор не движется; 
-    \item -- \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_INITIALIZATION} -- определяет, что прибор находится в стадии инициализации.
+    \item \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_MOVE} -- определяет, что прибор находится в движении;
+    \item \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_NOT_MOVE} -- определяет, что прибор не движется; 
+    \item \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_INITIALIZATION} -- определяет, что прибор находится в стадии инициализации.
 \end{itemize}
 
 В начале работы фильтр находится в состоянии \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_INITIALIZATION} и основной поток вызывает функцию
@@ -564,8 +564,8 @@ UART через один управляющий модуль. Управлени
 общие определения для всех подмодулей:
 
 \begin{itemize}
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_ICON_HIDE}-- используется для скрытия иконок без динамического отображения;
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_ICON_SHOW}-- используется для отображения иконок без динамического отображения;
+    \item \lstinline{BUSINESSLAYER_GRAPHICS_ICON_HIDE} -- используется для скрытия иконок без динамического отображения;
+    \item \lstinline{BUSINESSLAYER_GRAPHICS_ICON_SHOW} -- используется для отображения иконок без динамического отображения;
     \item \lstinline{BUSINESSLAYER_GRAPHICS_INT_HIDE} -- используется для скрытия модулей использующих целые числа для представления информации;
     \item \lstinline{BUSINESSLAYER_GRAPHICS_INT_SHOW_INVALID_VALUE} -- используется для обработки неверных данных переданный в модуль графики, ожидающего целые числа на вход, обычно значение скрывается -- пользователь замечает ошибку;
     \item \lstinline{BUSINESSLAYER_GRAPHICS_DOUBLE_HIDE} -- используется для скрытия модулей использующих числа с плавающей точкой для представления информации;
@@ -583,36 +583,36 @@ UART через один управляющий модуль. Управлени
 
 \subsubsection{Отображение азимута}
 
-Для отображения азимута потребуется реализовать шкалу, значения и иконку компаса. Иконка компаса может принимать значения \lstinline{BUSINESSLAYER_GRAPHICS_ICON_HIDE} и \lstinline{BUSINESSLAYER_GRAPHICS_ICON_SHOW}.
+Для отображения азимута потребуется реализовать шкалу, значения и иконку компаса. Иконка компаса может принимать значения \lstinline{ICON_HIDE} и \lstinline{ICON_SHOW}.
 Так как иконка не подразумевает динамическое перемещения, для нее задаются фиксированные координаты определенные в структуре \lstinline{businessLayer_graphics_redrawPicture_t}, в которой есть следующие поля:
 
 \begin{itemize}
-    \item positionOnScreen.x -- положение на экране по-горизонтали;
-    \item positionOnScreen.y -- положение на экране по-вертикали;
-    \item backgroundColor -- цвет фона.
+    \item \lstinline{positionOnScreen.x} -- положение на экране по-горизонтали;
+    \item \lstinline{positionOnScreen.y} -- положение на экране по-вертикали;
+    \item \lstinline{backgroundColor} -- цвет фона.
 \end{itemize}
 
-Чтобы отобразить или скрыть иконку требуется вызов функции \lstinline{businessLayer_graphics_determineCompass}, при получении значения \lstinline{BUSINESSLAYER_GRAPHICS_ICON_HIDE} иконка и шкала компаса
-будет скрыта, при значении \lstinline{BUSINESSLAYER_GRAPHICS_ICON_SHOW} иконка появится вместе со шкалой и при другом значении лежащем в пределах от 0 до 360 будет отрисовываться азимут.
-После определения состояния компаса оно будет обработано в потоке модуля графики, где используя функцию \lstinline{businessLayer_graphicsHelpful_fillRectangle} в память будет записана заранее сгенерированная иконка компаса.
+Чтобы отобразить или скрыть иконку требуется вызов функции \lstinline{businessLayer_graphics_determineCompass}, при получении значения \lstinline{ICON_HIDE} иконка и шкала компаса
+будет скрыта, при значении \lstinline{ICON_SHOW} иконка появится вместе со шкалой и при другом значении лежащем в пределах от 0 до 360 будет отрисовываться азимут.
+После определения состояния компаса оно будет обработано в потоке модуля графики, где используя функцию \lstinline{businessLayer_graphicsHelpful_fill} в память будет записана заранее сгенерированная иконка компаса.
 
 Для отображения значения азимута требуется отобразить целое число градусов текущего азимута, символы, также как и иконки, представляют заранее сгенерированные иконки. Положение
 значения компаса определено в структуре \lstinline{businessLayer_graphicsHelpful_stringParams_t} и имеет следующие атрибуты:
 
 \begin{itemize}
-    \item positionOnScreen.x -- положение на экране по-горизонтали;
-    \item positionOnScreen.y -- положение на экране по-вертикали;
-    \item fontSize -- размер шрифта;
-    \item backgroundColor -- цвет фона;
-    \item horizontalAlignment -- тип выравнивания по горизонтали.
+    \item \lstinline{positionOnScreen.x} -- положение на экране по-горизонтали;
+    \item \lstinline{positionOnScreen.y} -- положение на экране по-вертикали;
+    \item \lstinline{fontSize} -- размер шрифта;
+    \item \lstinline{backgroundColor} -- цвет фона;
+    \item \lstinline{horizontalAlignment} -- тип выравнивания по горизонтали.
 \end{itemize}
 
-В случае, когда требуется скрыть иконку делается вызов \lstinline{businessLayer_graphics_determineAzimuth} со значением \lstinline{BUSINESSLAYER_GRAPHICS_ICON_HIDE},
-и в значение строки записывается символ "\\0", означающий отсутствие какой либо информации. Далее поток обрабатывает записанную в строку информацию, отображая ее
+В случае, когда требуется скрыть иконку делается вызов \lstinline{businessLayer_graphics_determineAzimuth} со значением \lstinline{ICON_HIDE},
+и в значение строки записывается символ "-", означающий отсутствие какой либо информации. Далее поток обрабатывает записанную в строку информацию, отображая ее
 при помощи функции \lstinline{businessLayer_graphicsHelpful_printString}, данная функция принимает структуру с параметрами строки, а также принимает координаты
 в которые будут записаны значения координат согласно размеру строки. Так как размер шрифта неравномерный в зависимости от символа, предусмотрено стирание области,
-где были записаны предыдущие символы функцией \lstinline{businessLayer_graphicsHelpful_fillRectangle}. После успешной записи в память изображения, данные в кэш памяти
-отмечаются как невалидные функцией \lstinline{businessLayer_invalidateDataCacheRectangle}.
+где были записаны предыдущие символы функцией \lstinline{businessLayer_graphicsHelpful_fill}. После успешной записи в память изображения, данные в кэш памяти
+отмечаются как невалидные функцией \lstinline{businessLayer_invalidateDataCache}.
 
 Идея отображения шкалы компаса в динамике состоит в том, чтобы перемещать заранее сгенерированную шкалу относительно фиксированной рамки. В статической области памяти
 шкала имеет вид линейки со значениями от 0 до 360. Можно было бы использовать шкалу с размером ограничивающей рамки, однако это накладывает определенные ограничения относительно
@@ -620,23 +620,23 @@ UART через один управляющий модуль. Управлени
 требуется продумать алгоритм, который будет представлять массив в виде кольца и перемещать это кольцо внутри рамки, обрабатывая случаи отображения головы и хвоста массива.
 Идея описанная выше накладывает алгоритмические сложности: увеличивает количество условных переходов при перерисовке, которые нужно предусмотреть, а также необходимо за несколько
 раз отрисовывать изображение. Иной подход увеличивает количество занимаемой памяти, однако уменьшает сложность отрисовки до минимума где необходимо вычислить только координаты
-области изображения которые нужно отрисовать. В первом описанном случае требовалось совершить минимум три вызова \lstinline{businessLayer_graphicsHelpful_fillRectangle}, для
+области изображения которые нужно отрисовать. В первом описанном случае требовалось совершить минимум три вызова \lstinline{businessLayer_graphicsHelpful_fill}, для
 того чтобы отрисовать иконку и скрыть лишнее. Во втором требуется только один вызов функции, в которой будет отрисована необходимая область шкалы.
 
 Шкала компаса записана в структуру, особенность которой в том, что она хранит размер рамки в которую будет вписано изображение:
 
 \begin{itemize}
-    \item positionOnScreen.x -- положение на экране по-горизонтали;
-    \item positionOnScreen.y -- положение на экране по-вертикали;
-    \item pictureWindowSize.x -- длина рамки по горизонтали;
-    \item pictureWindowSize.y -- длина рамки по вертикали;
-    \item backgroundColor -- цвет фона.
+    \item \lstinline{positionOnScreen.x} -- положение на экране по-горизонтали;
+    \item \lstinline{positionOnScreen.y} -- положение на экране по-вертикали;
+    \item \lstinline{pictureWindowSize.x} -- длина рамки по горизонтали;
+    \item \lstinline{pictureWindowSize.y} -- длина рамки по вертикали;
+    \item \lstinline{backgroundColor} -- цвет фона.
 \end{itemize}
 
-Отображение шкалы начинается с функции \lstinline{businessLayer_graphics_determineCompass} в которой обрабатываются случаи скрытия и отображения иконки, при получении целого числа
+Отображение шкалы начинается с функции определения значения и состояния шкалы и иконки компаса, в которой обрабатываются случаи скрытия и отображения иконки, при получении целого числа
 от 0 до 360, функция вызывает \lstinline{businessLayer_determineLocationCompassScaleHorizontal} и вычисляет значение координат шкалы, которые будут записаны в память для отрисовки.
 Поток отрисовки ожидает изменения координат по горизонтали, при изменении происходит вызов \lstinline{businessLayer_graphicsHelpful_printPartIcon}, которая отрисовывает только указанную
-область массива, а также в конце вызовет \lstinline{businessLayer_invalidateDataCacheRectangle}, для того чтобы избежать появления случайных элементов на экране в процессе перерисовки.
+область массива, а также в конце вызовет \lstinline{businessLayer_invalidateDataCache}, для того чтобы избежать появления случайных элементов на экране в процессе перерисовки.
 
 \subsubsection{Отображение ориентации прибора в пространстве}
 
@@ -645,11 +645,13 @@ UART через один управляющий модуль. Управлени
 и в отрисовке шкалы компаса. В случае, когда шкалы наклона работают, иконка соответствующего режима работает. 
 
 Иконка наклона также хранит данные о положении иконки и ее цвете фона в структуре \lstinline{businessLayer_graphics_redrawPicture_t}, функция \lstinline{businessLayer_graphics_determineHorizon}
-обрабатывает устанавливаемые состояния, это могут быть \lstinline{BUSINESSLAYER_GRAPHICS_ICON_HIDE} и \lstinline{BUSINESSLAYER_GRAPHICS_ICON_SHOW} для скрытия и установки иконки компаса соответственно, 
-так и целые значения от -90 до 90 градусов. В потоке обрабатываются все установленные состояния, для иконки вызывается функция \lstinline{businessLayer_graphicsHelpful_fillRectangle}, в которую передается
+обрабатывает устанавливаемые состояния, это могут быть \lstinline{ICON_HIDE} и \lstinline{ICON_SHOW} для скрытия и установки иконки компаса соответственно, 
+так и целые значения от -90 до 90 градусов.
+
+В потоке обрабатываются все установленные состояния, для иконки вызывается функция \lstinline{businessLayer_graphicsHelpful_fill}, в которую передается
 изображении иконки наклона, а также через функции \lstinline{businessLayer_graphics_detDeviationRight} и \lstinline{businessLayer_graphics_detDeviationLeft} определяется координата иконки
 для правой и левой шкалы наклона соответственно и изменяет их в соответствии со значением. Если координаты по вертикали были изменены, то поток отображения перерисует данную шкалу
-используя функцию \lstinline{businessLayer_graphicsHelpful_printPartIcon} и после всего этого конце вызовет \lstinline{businessLayer_invalidateDataCacheRectangle},
+используя функцию \lstinline{businessLayer_graphicsHelpful_printPartIcon} и после всего этого конце вызовет \lstinline{businessLayer_invalidateDataCache},
 для того чтобы избежать появления случайных элементов на экране в процессе перерисовки.
 
 \subsubsection{Отображение позиции цели}
@@ -679,11 +681,15 @@ UART через один управляющий модуль. Управлени
 Поток обработки графики проверяет смещение по горизонтали и вертикали, и если перемещение было то стирает изображение или часть изображения используя функцию
 \lstinline{businessLayer_graphics_eraseFindTarget}, эта функция проверяет како тип стрелки бы перемещен, как перекрывается текущая и предыдущая стрелка и стирает
 ту область памяти где нет перекрытия предыдущей иконки. 
-После отрисовки память хранящая предыдущую и текущую иконку инвалидируется. 
+
+После отрисовки память хранящая предыдущую и текущую иконку инвалидируется, чтобы избежать появления неверных данных на изображении при динамической перерисовке. 
 
 \subsubsection{Отображение определения движения}
 
-Работа данной части модуля графики состоит в том чтобы обрабатывать входящие значения от модуля \moduleMoveDetect и устанавливать \lstinline{BUSINESSLAYER_GRAPHICS_ICON_HIDE} и \lstinline{BUSINESSLAYER_GRAPHICS_ICON_SHOW}
+Работа данной части модуля графики состоит в том чтобы обрабатывать входящие значения от модуля \moduleMoveDetect и устанавливать \lstinline{ICON_HIDE} и \lstinline{ICON_SHOW}
 в зависимости от того есть движение или нет, при ситуации когда движение есть, поток модуля графики отрисовывает красную метку координаты которой определены в \lstinline{businessLayer_graphics_redrawPicture_t}.
-Иначе поток скрывает метку, и ожидает пока не поступит состояние на отрисовку, в случае движения прибора.
+Иначе поток скрывает метку, и ожидает пока не поступит состояние на отрисовку, в случае движения прибора. 
+
+Также при движении происходит обращение драйверу видеопотока,
+который включает режим картинка-в-картинке, в случае остановки прибора после движения, при возобновлении движения модуль скрывает иконку и режим картинка-в-картинке.
 
