@@ -8,7 +8,7 @@
 
 Описываемый алгоритм отвечает за калибровку магнетометра и описывает полный цикл работы модуля калибровки магнитометра: от инициализации и вычитки параметров до
 вычисления калибровки и уточнения данных. 
-
+%TODO: Проверить что на выходе из условия мы попадаем в начало потока если это необходимо
 Распишем данный алгоритм по шагам:
 \begin{enumerate_step}
     \item Начало алгоритма.
@@ -232,18 +232,54 @@
     
     \item \label{i:alg:gyro:566} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_APPLY|, то перейти дальше, иначе перейти к шагу
     \ref{i:alg:gyro:571}.
+    \item Вычесть из принятых данных гироскопа, записанные в векторе \lstinline|memsCb.data|, смещения записанные \lstinline|offsets|.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithData| с откалиброванными данными и статусом \lstinline|BL_CALIB_MANAGER_OK|.
 
     \item \label{i:alg:gyro:571} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_RECALIBRATE|, то перейти дальше, иначе перейти к шагу
     \ref{i:alg:gyro:599}.
+    \item \label{i:alg:gyro:573} Если текущее поле \lstinline|measurementCount| дескриптора равно \lstinline|CALIB_ALL_PACKETS|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:gyro:591}.
+    \item Обнуления массива \lstinline|columnMean|.
+    \item Обнуление индексов \lstinline|i| и \lstinline|j|.
+    \item \label{i:alg:gyro:517} Проверка, что \lstinline|i| меньше \lstinline|CALIB_NUM_OF_AXES|, если условие истинно, то перейти дальше иначе перейти к шагу \ref{i:alg:gyro:528}.
+    \item Проверка, что \lstinline|j| меньше \lstinline|CALIB_ALL_PACKETS|, если условие истинно, то перейти дальше, иначе увеличить \lstinline|i| на единицу и перейти к шагу \ref{i:alg:gyro:523}.
+    \item Сложить \lstinline|columnMean[i]| и \lstinline|rawMeasurements[j + i]|, результат записать в \lstinline|columnMean[i]|.
+    \item \label{i:alg:gyro:523} Разделить \lstinline|columnMean[i]| на \lstinline|CALIB_ALL_PACKETS|, перейти к шагу \label{i:alg:gyro:517}.
+    \item \label{i:alg:gyro:528} Скопировать первые три вычисленные вещественные числа из массива \lstinline|columnMean| в вектор \lstinline|offsets|.
+    \item Вычислить CRC-код полученного вектора \lstinline|offsets|.
+    \item Проверить валидность вычисленного кода, если код равен \lstinline|BL_CRC_INVALID|, то перейти дальше, иначе перейти к шагу \ref{i:alg:gyro:584}.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
+    \item \label{i:alg:gyro:584} Записать матрицу и CRC-код в структуру \lstinline|calibrationParams|.
+    \item Проверить возможность записи во флэш память при помощи процедуры \lstinline|businessLayer_flashReadyToOperate|, если выходное значение истинно то перейти дальше, иначе переключить контекст.
+    \item Если текущее значение \lstinline|flashRetCode| не равно \lstinline|BL_FLASH_RETURN_CODE_OK|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:gyro:470}.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
+    \item \label{i:alg:gyro:470} Проверить состояние обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|, если значение истинно то перейти дальше, иначе переключить контекст.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|BL_CALIB_MANAGER_OK|.
+    \item Присвоить полю \lstinline|command| дескриптора  новую команду \lstinline|CALIB_APPLY| и перейти к шагу \ref{i:alg:gyro:551}.
+
+    \item \label{i:alg:gyro:591} Скопировать принятые данныи из \lstinline|memsCb.data| в массив \lstinline|rawMeasurements| и перейти к шагу \ref{i:alg:gyro:551}.
 
     \item \label{i:alg:gyro:599} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_CANCEL|, то перейти дальше, иначе перейти к шагу
     \ref{i:alg:gyro:605}.
-
+    \item Присвоить полю \lstinline|command| дескриптора  новую команду \lstinline|CALIB_APPLY| и перейти к шагу \ref{i:alg:gyro:551}.
+    \item Присвоить полю \lstinline|measurementCount| дескриптора значение 0.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|BL_CALIB_MANAGER_OK| и перейти к шагу \ref{i:alg:gyro:551}.
+ 
     \item \label{i:alg:gyro:605} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_RESET|, то перейти дальше, иначе перейти к шагу
     \ref{i:alg:gyro:551}.
+    \item Обнулить вектор \lstinline|offsets|.
+    \item Вычислить CRC-код полученного вектора \lstinline|offsets|.
+    \item Проверить валидность вычисленного кода, если код равен \lstinline|BL_CRC_INVALID|, то перейти дальше, иначе перейти к шагу \ref{i:alg:gyro:584}.
 
 \end{enumerate_step}
 
 % \subsection{Алгоритм расчета ориентации и азимута}
 
-% \subsection{Алгоритм управления калибровкой}
+\subsection{Алгоритм управления калибровкой}
+\blockScheme\
+Данный алгоритм необходим для управлением процессом калибровки, используя функции модулей калибровки. Данный алгоритм позволяет контролировать
+процесс калибровки каждого модуля по отдельности в конкретный момент времени. То есть исключая возможности калибровки магнетометра и гироскопа
+одновременно. На схеме \blockScheme\ приведено графическое описание алгоритма для управления калибровкой. В процессе работы происходит валидация
+приходящих параметров, проверяется возможность обслужить запрос, а также проверяется последовательность запросов.
+

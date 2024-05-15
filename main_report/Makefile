@@ -12,14 +12,14 @@ fast: *.tex ../*.tex ../*.bib
 
 $(DIPLOMA_REPORT_PDF).pdf: *.tex ../*.tex ../*.bib
 	$(PDFLATEX) $(DIPLOMA_REPORT_PDF)
-	$(MAKEINDEX) $(DIPLOMA_REPORT_PDF).nlo -s nomencl.ist -o $(DIPLOMA_REPORT_PDF).nls
-	$(BIBTEX) $(DIPLOMA_REPORT_PDF).aux
-	# Used for master paper only
-	# $(BIBTEX) My.aux
-	$(PDFLATEX) $(DIPLOMA_REPORT_PDF)
-	$(PDFLATEX) $(DIPLOMA_REPORT_PDF)
-	# Citations count fixing
-	$(PDFLATEX) $(DIPLOMA_REPORT_PDF)
+	# $(MAKEINDEX) $(DIPLOMA_REPORT_PDF).nlo -s nomencl.ist -o $(DIPLOMA_REPORT_PDF).nls
+	# $(BIBTEX) $(DIPLOMA_REPORT_PDF).aux
+	# # Used for master paper only
+	# # $(BIBTEX) My.aux
+	# $(PDFLATEX) $(DIPLOMA_REPORT_PDF)
+	# $(PDFLATEX) $(DIPLOMA_REPORT_PDF)
+	# # Citations count fixing
+	# $(PDFLATEX) $(DIPLOMA_REPORT_PDF)
 
 cleanall: clean
 	$(RM)  *.pdf
