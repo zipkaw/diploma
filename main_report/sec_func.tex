@@ -531,17 +531,17 @@ UART через один управляющий модуль. Управлени
 Для определения текущего состояние используются следующие перечисления:
 
 \begin{itemize}
-    \item \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_MOVE} -- определяет, что прибор находится в движении;
-    \item \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_NOT_MOVE} -- определяет, что прибор не движется; 
-    \item \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_INITIALIZATION} -- определяет, что прибор находится в стадии инициализации.
+    \item \lstinline{BL_MOVE_DETECTOR_MOVE} -- определяет, что прибор находится в движении;
+    \item \lstinline{BL_MOVE_DETECTOR_NOT_MOVE} -- определяет, что прибор не движется; 
+    \item \lstinline{BL_MOVE_DETECTOR_INITIALIZATION} -- определяет, что прибор находится в стадии инициализации.
 \end{itemize}
 
-В начале работы фильтр находится в состоянии \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_INITIALIZATION} и основной поток вызывает функцию
+В начале работы фильтр находится в состоянии \lstinline{BL_MOVE_DETECTOR_INITIALIZATION} и основной поток вызывает функцию
 \lstinline{deviceMoveDetectorFilterStep}, в которой происходит обновление фильтра пока данные не станут стабильные.
-После этого поток может находится в двух состояниях \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_MOVE} и \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_NOT_MOVE}.
+После этого поток может находится в двух состояниях \lstinline{BL_MOVE_DETECTOR_MOVE} и \lstinline{BL_MOVE_DETECTOR_NOT_MOVE}.
 За определение перемещения отвечает функция \lstinline{deviceMoveDetectorRecognizeState}, которая вызывается в потоке после состояния инициализации.
 Внутри ее перебираются значения для каждой оси вычисляются обновленные фильтром значения. Функция \lstinline{deviceMoveDetectorIIRFilter} реализует в себе
-БИХ ФНЧ. В случае если результат превышает порог заданный в \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_GYRO_THRESHOLD}, то отправляется состояние \lstinline{BUSINESS_LAYER_MOVE_DETECTOR_MOVE}.
+БИХ ФНЧ. В случае если результат превышает порог заданный в \lstinline{BL_MOVE_DETECTOR_GYRO_THRESHOLD}, то отправляется состояние \lstinline{BL_MOVE_DETECTOR_MOVE}.
 
 \subsection{Модуль \moduleFindTarget}
 
@@ -571,13 +571,13 @@ UART через один управляющий модуль. Управлени
 общие определения для всех подмодулей:
 
 \begin{itemize}
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_ICON_HIDE} -- используется для скрытия иконок без динамического отображения;
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_ICON_SHOW} -- используется для отображения иконок без динамического отображения;
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_INT_HIDE} -- используется для скрытия модулей использующих целые числа для представления информации;
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_INT_SHOW_INVALID_VALUE} -- используется для обработки неверных данных переданный в модуль графики, ожидающего целые числа на вход, обычно значение скрывается -- пользователь замечает ошибку;
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_DOUBLE_HIDE} -- используется для скрытия модулей использующих числа с плавающей точкой для представления информации;
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_DOUBLE_SHOW_INVALID_VALUE} -- используется для обработки неверных данных переданный в модуль графики, ожидающего числа с плавающей точкой на вход, обычно значение скрывается -- пользователь замечает ошибку;
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_DOUBLE_SHOW} -- используется для отображения начального состояния в модуле графики, ожидающего числа с плавающей точкой на вход.
+    \item \lstinline{BL_GRAPHICS_ICON_HIDE} -- используется для скрытия иконок без динамического отображения;
+    \item \lstinline{BL_GRAPHICS_ICON_SHOW} -- используется для отображения иконок без динамического отображения;
+    \item \lstinline{BL_GRAPHICS_INT_HIDE} -- используется для скрытия модулей использующих целые числа для представления информации;
+    \item \lstinline{BL_GRAPHICS_INT_SHOW_INVALID_VALUE} -- используется для обработки неверных данных переданный в модуль графики, ожидающего целые числа на вход, обычно значение скрывается -- пользователь замечает ошибку;
+    \item \lstinline{BL_GRAPHICS_DOUBLE_HIDE} -- используется для скрытия модулей использующих числа с плавающей точкой для представления информации;
+    \item \lstinline{BL_GRAPHICS_DOUBLE_SHOW_INVALID_VALUE} -- используется для обработки неверных данных переданный в модуль графики, ожидающего числа с плавающей точкой на вход, обычно значение скрывается -- пользователь замечает ошибку;
+    \item \lstinline{BL_GRAPHICS_DOUBLE_SHOW} -- используется для отображения начального состояния в модуле графики, ожидающего числа с плавающей точкой на вход.
 \end{itemize}
 
 Все иконки храняться в двумерном массиве представляющем из себя последовательность из 4 каналов: RGBA, структура данных хранящее массив изображения и его длину имеет название \lstinline{businessLayer_graphics_font_t}.
@@ -599,7 +599,7 @@ UART через один управляющий модуль. Управлени
     \item \lstinline{backgroundColor} -- цвет фона.
 \end{itemize}
 
-Чтобы отобразить или скрыть иконку требуется вызов функции \lstinline{businessLayer_graphics_determineCompass}, при получении значения \lstinline{ICON_HIDE} иконка и шкала компаса
+Чтобы отобразить или скрыть иконку требуется вызов функции \lstinline{BL_graphics_determineCompass}, при получении значения \lstinline{ICON_HIDE} иконка и шкала компаса
 будет скрыта, при значении \lstinline{ICON_SHOW} иконка появится вместе со шкалой и при другом значении лежащем в пределах от 0 до 360 будет отрисовываться азимут.
 После определения состояния компаса оно будет обработано в потоке модуля графики, где используя функцию \lstinline{businessLayer_graphicsHelpful_fill} в память будет записана заранее сгенерированная иконка компаса.
 
@@ -668,9 +668,9 @@ UART через один управляющий модуль. Управлени
 Для отображения позиции на экране определены следующие состояния которые приходят на модуль через функцию \lstinline{businessLayer_graphics_detFindTarget}:
 
 \begin{itemize}
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_DOUBLE_HIDE} -- скрывает иконку стрелки пока не придет значение \lstinline{BUSINESSLAYER_GRAPHICS_DOUBLE_SHOW};
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_DOUBLE_SHOW} -- показывает иконку стрелки на ее изначальном положении;
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_DOUBLE_SHOW_INVALID_VALUE} -- скрывает иконку, но не останавливает обработку других приходящих значений, в случае если пришло правильное значение
+    \item \lstinline{BL_GRAPHICS_DOUBLE_HIDE} -- скрывает иконку стрелки пока не придет значение \lstinline{BL_GRAPHICS_DOUBLE_SHOW};
+    \item \lstinline{BL_GRAPHICS_DOUBLE_SHOW} -- показывает иконку стрелки на ее изначальном положении;
+    \item \lstinline{BL_GRAPHICS_DOUBLE_SHOW_INVALID_VALUE} -- скрывает иконку, но не останавливает обработку других приходящих значений, в случае если пришло правильное значение
     отображение возобновляется.
 \end{itemize}
 
@@ -678,9 +678,9 @@ UART через один управляющий модуль. Управлени
 в дескриптор графики:
 
 \begin{itemize}
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_FIND_TARGET_LEFT} -- определяет, что прибор нужно повернуть влево для того чтобы обнаружить цель;
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_FIND_TARGET_RIGHT} -- определяет, что прибор нужно повернуть вправо для того чтобы обнаружить цель; 
-    \item \lstinline{BUSINESSLAYER_GRAPHICS_FIND_TARGET_CENTER} -- определяет, что цель цель находится в пределах экрана, поток отображения в данном случае буде использовать
+    \item \lstinline{BL_GRAPHICS_FIND_TARGET_LEFT} -- определяет, что прибор нужно повернуть влево для того чтобы обнаружить цель;
+    \item \lstinline{BL_GRAPHICS_FIND_TARGET_RIGHT} -- определяет, что прибор нужно повернуть вправо для того чтобы обнаружить цель; 
+    \item \lstinline{BL_GRAPHICS_FIND_TARGET_CENTER} -- определяет, что цель цель находится в пределах экрана, поток отображения в данном случае буде использовать
     вычисленные координаты на экране.
 \end{itemize}
 
@@ -756,7 +756,7 @@ UART через один управляющий модуль. Управлени
 
 Чтобы остановить обработку команд и соответственно поток обработки, следует вызвать функцию \lstinline|businessLayer_flashClose|.
 
-\nomenclaturex{SPI}{.}{.}
+\nomenclaturex{SPI}{Serilal preripheral interface}{последовательный периферийный интерфейс}
 
 \subsubsection{Модуль взаимодейтсвия флэш памяти и UART}
 
