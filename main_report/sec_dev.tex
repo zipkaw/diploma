@@ -62,11 +62,11 @@
     \item Сбросить флаг состояния обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|.
     \item Вызвать процедуру \lstinline|businessLayer_flashWriteAsync|, с данными \lstinline|calibParams| и адресом \lstinline|parametersAddress| из структуры дескриптора.
     \item Проверить состояние обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|, если значение истинно то перейти дальше, иначе переключить контекст.
-    \item \label{i:alg:mag:846} Присвоить полю \lstinline|command| дескриптора \lstinline|CALIB_CANCEL|.
-    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с состоянием \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
+    \item \label{i:alg:mag:846} Присвоить полю \lstinline|command| дескриптора  новую команду\lstinline|CALIB_CANCEL|.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
     \item \label{i:alg:mag:1008} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_RESET_TO_DEFAULTS|, то перейти дальше, иначе перейти к шагу
     \ref{i:alg:mag:965}.
-    \item Присвоить полю \lstinline|command| дескриптора \lstinline|CALIB_APPLY|.
+    \item Присвоить полю \lstinline|command| дескриптора  новую команду\lstinline|CALIB_APPLY|.
     \item Скопировать матрицу \lstinline|calib_softIronDef| в матрицу \lstinline|softIronScales|.
     \item Скопировать матрицу \lstinline|calib_hardIronDef| в матрицу \lstinline|hardIronScales|.
     \item Вычислить CRC-код параметров \lstinline|hardIronScales| и \lstinline|softIronScales|, записанных в одну структуру \lstinline|calibParams|.
@@ -74,8 +74,8 @@
     \item Записать в структуру \lstinline|calibParams| в поле \lstinline|checkSum| вычисленный код.
     \item Проверить выходное значение процедуры \lstinline|businessLayer_flashReadyToOperate|, если значение истинно то перейти дальше, иначе переключить контекст.
     \item Сбросить флаг состояния обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|.
-    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с состоянием \lstinline|BL_CALIB_MANAGER_OK|.
-    \item \label{i:alg:mag:759} Вызвать пользовательскую функцию \lstinline|cbWithoutData| с состоянием \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|BL_CALIB_MANAGER_OK|.
+    \item \label{i:alg:mag:759} Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
     \item Перезапустить поток.
     \item Вызвать процедуру \lstinline|businessLayer_flashWriteAsync|, с данными \lstinline|calibParams| и адресом \lstinline|parametersAddress| из структуры дескриптора.
     \item Проверить состояние обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|, если значение истинно то перейти дальше, иначе переключить контекст.
@@ -92,7 +92,7 @@
     \item Вычислить CRC-код прочитанных данных.
     \item Сравнить прочитанный CRC-код с вычисленным. Если условие истинно перейти к шагу \ref{i:alg:mag:974}, иначе перейти к шагу \ref{i:alg:mag:899}.
     \item \label{i:alg:mag:899} Установить поле \lstinline|readParametersRequest| дескриптора равным \lstinline|CALIBRATION_PARAMETERS_WAS_READ_FAIL|, и перейти к шагу \ref{i:alg:mag:971}.
-    \item \label{i:alg:mag:971} \item Скопировать матрицу \lstinline|calib_softIronDef| в матрицу \lstinline|softIronScales|.
+    \item \label{i:alg:mag:971} Скопировать матрицу \lstinline|calib_softIronDef| в матрицу \lstinline|softIronScales|.
     \item Скопировать матрицу \lstinline|calib_hardIronDef| в матрицу \lstinline|hardIronScales|.
     \item Перейти к шагу \ref{i:alg:mag:974}.
 \end{enumerate_step}
@@ -109,12 +109,141 @@
     \lstinline|BL_CALIB_ERROR_INVALID_HANDLE|.
     \item Создание массива \lstinline|calibrateData| для хранения откалиброванных данных.
     \item Создание массива \lstinline|inputMeasurements| для хранения входных данных.
-    \item 
-\end{enumerate_step}
+    \item Запуск потока вызовом \lstinline|PT_BEGIN|.
+    \item \label{i:alg:acc:850} Проверить поле структуры обратного вызова дескриптора \lstinline|memsCb.memsWasRead|, на то были ли получены новые данные от драйвера акселерометра, 
+    если нет, то переключить контекст на другие потоки, иначе выполнить следующий шаг.
+    \item \label{i:alg:acc:857} Проверка существует ли запрос на чтение параметров из флэш памяти. Если поле \lstinline|readParametersRequest| дескриптора равно \lstinline|CALIB_REQUEST_FOR_PARAMETERS|,
+    то перейти к следующему шагу, иначе перейти к шагу \ref{i:alg:acc:866}.
+    \item Проверить возможность записи во флэш память при помощи процедуры \lstinline|businessLayer_flashReadyToOperate|, если выходное значение истинно то перейти дальше, иначе переключить контекст.
+    \item Сбросить флаг состояния обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|.
+    \item Вызвать процедуру чтения флэш памяти \lstinline|businessLayer_flashReadAsync|, с переданным параметром \lstinline|calibParams| и размером данных, и присвоить выходное значение функции переменной \lstinline|flashRetCode|.
+    \item Если текущее значение \lstinline|flashRetCode| не равно \lstinline|BL_FLASH_RETURN_CODE_OK|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:568}.
+    \item Проверить состояние обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|, если значение истинно то перейти дальше, иначе переключить контекст.
+    \item Проверить состояние ошибок обратного вызова флэш памяти \lstinline|flashCb.error|, если значение истинно то перейти дальше, иначе перейти к шагу \ref{i:alg:acc:568}.
+    \item Присвоить полю \lstinline|readParametersRequest| дескриптора значение \lstinline|CALIB_PARAMETERS_WAS_READ_SUCCESS|.
+    \item Вычислить CRC-код прочитанных данных.
+    \item Сравнить прочитанный CRC-код с вычисленным. Если условие истинно перейти к шагу \ref{i:alg:acc:866}, иначе перейти к шагу \ref{i:alg:acc:568}.
+    \item \label{i:alg:acc:568} Установить поле \lstinline|readParametersRequest| дескриптора равным \lstinline|CALIBRATION_PARAMETERS_WAS_READ_FAIL|, и перейти к шагу \ref{i:alg:acc:863}.
+    \item \label{i:alg:acc:863} Скопировать матрицу \lstinline|scaleMatrixDef| в матрицу \lstinline|scaleMatrix|.
+    
+    \item \label{i:alg:acc:866} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_APPLY|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:879}.
+    \item Перемножить матрицы \lstinline|inputMeasurements| и \lstinline|scaleMatrix|, выходной результат записать в \lstinline|calibrateData|.
+    \item Вызвать функцию пользователя \lstinline|cbWithData| со статусом \lstinline|BL_CALIB_MANAGER_OK| и данными \lstinline|calibrateData|.
+    \item \label{i:alg:acc:879} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_RESET|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:922}.
+    \item Скопировать матрицу \lstinline|scaleMatrixDef| в матрицу \lstinline|scaleMatrix|.
+    \item Вычислить CRC-код матрицы \lstinline|scaleMatrix|.
+    \item Проверить валидность вычисленного кода, если код равен \lstinline|BL_CRC_INVALID|, то перейти дальше, иначе перейти к шагу \ref{i:alg:acc:891}.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
+    \item \label{i:alg:acc:891} Записать матрицу и CRC-код в структуру \lstinline|calibrationParams|.
+    \item Проверить возможность записи во флэш память при помощи процедуры \lstinline|businessLayer_flashReadyToOperate|, если выходное значение истинно то перейти дальше, иначе переключить контекст.
+    \item Если текущее значение \lstinline|flashRetCode| не равно \lstinline|BL_FLASH_RETURN_CODE_OK|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:907}.
+    \item Присвоить полю \lstinline|command| дескриптора  новую команду\lstinline|CALIB_APPLY|.
+    \item \label{i:alg:acc:903} Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
+    \item \label{i:alg:acc:907} Проверить состояние обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|, если значение истинно то перейти дальше, иначе переключить контекст.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|BL_CALIB_MANAGER_OK|.
+    
+    \item \label{i:alg:acc:922} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_RECALIBRATE|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:985}.
+    \item \label{i:alg:acc:924} Если текущее поле \lstinline|state| дескриптора равно \lstinline|CALIB_POS_FINISH|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:973}.
+    \item Транспонировать матрицу \lstinline|rawData| полученных данных по всем осям, результат записать в \lstinline|tRawDataMat|.
+    \item Перемножить матрицы \lstinline|tRawDataMat| и \lstinline|rawData|. Записать промежуточный результат в \lstinline|tXMatProduct|.
+    \item Найти обратную матрицу, для матрицы \lstinline|tXMatProduct|, результат записать в \lstinline|tRawDataMat|.
+    \item Перемножить матрицы \lstinline|invProduct| и \lstinline|tRawDataMat|, результат записать в \lstinline|intrmMultProduct|.
+    \item Перемножить матрицы \lstinline|intrmMultProduct| и \lstinline|positionExpectedAcceleration|, результат записать в \lstinline|scaleMatrix|.
+    \item Присвоить полю \lstinline|command| дескриптора  новую команду \lstinline|CALIB_CANCEL|.
+    \item Вычислить CRC-код полученной матрицы \lstinline|scaleMatrix|.
+    \item Проверить валидность вычисленного кода, если код равен \lstinline|BL_CRC_INVALID|, то перейти дальше, иначе перейти к шагу \ref{i:alg:acc:932}.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
+    \item \label{i:alg:acc:932} Записать матрицу и CRC-код в структуру \lstinline|calibrationParams|.
+    \item Проверить возможность записи во флэш память при помощи процедуры \lstinline|businessLayer_flashReadyToOperate|, если выходное значение истинно то перейти дальше, иначе переключить контекст.
+    \item Если текущее значение \lstinline|flashRetCode| не равно \lstinline|BL_FLASH_RETURN_CODE_OK|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:953}.
+    \item Присвоить полю \lstinline|command| дескриптора  новую команду \lstinline|CALIB_APPLY|.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|CALIB_WARNING_INVALID_CHECKSUM|.
+    \item \label{i:alg:acc:953} Проверить состояние обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|, если значение истинно то перейти дальше, иначе переключить контекст.
+    \item Присвоить полю \lstinline|state| дескриптора новое состояние \lstinline|CALIB_FINISHED|.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithState| с кодом \lstinline|BL_CALIB_MANAGER_OK| и состоянием из поля \lstinline|state| дескриптора.
 
+    \item \label{i:alg:acc:973} Если текущее поле \lstinline|state| дескриптора равно \lstinline|CALIB_FIRST_POS|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:981}.
+    \item Перезапустить поток, перейти к шагу \ref{i:alg:acc:850}.
+    \item \label{i:alg:acc:981} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_SET_POS|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:850}.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithState| с кодом \lstinline|CALIB_ERROR_COMMAND| и состоянием из поля \lstinline|state| дескриптора.
+
+    \item \label{i:alg:acc:985} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_SET_POS|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:1010}.
+    \item \label{i:alg:acc:988} Если текущее поле \lstinline|measurementCount| дескриптора меньше \lstinline|CALIB_AMOUNT_PACK| и поле \lstinline|state| равно
+    \lstinline|CALIB_LAST_POS|, то перейти дальше, иначе перейти к шагу \ref{i:alg:acc:996}.
+    \item Присвоить полю \lstinline|command| дескриптора  новую команду \lstinline|CALIB_RECALIBRATE|.
+    \item Присвоить полю \lstinline|state| дескриптора новое состояние \lstinline|CALIB_POS_FINISH|.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithState| с кодом \lstinline|BL_CALIB_MANAGER_OK| и состоянием из поля \lstinline|state| дескриптора.
+    \item \label{i:alg:acc:996} Если текущее поле \lstinline|measurementCount| дескриптора меньше \lstinline|CALIB_AMOUNT_PACK|, то перейти дальше, иначе перейти к шагу \ref{i:alg:acc:1003}.
+    \item Увеличить поле \lstinline|state| дескриптора на единицу.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithState| с кодом \lstinline|BL_CALIB_MANAGER_OK| и состоянием из поля \lstinline|state| дескриптора.
+    \item Присвоить полю \lstinline|command| дескриптора новую команду\lstinline|CALIB_WAIT_NEW_POS|.
+    \item Перейти к шагу \ref{i:alg:acc:850}.
+    \item \label{i:alg:acc:1003} Увеличить смещение \lstinline|positionInStorage| на количество полученных данных.
+    \item Присвоить массиву \lstinline|eachPositionData| полученные данные.
+    \item Увеличить счетчик \lstinline|measurementCount| на единицу.
+
+    \item \label{i:alg:acc:1010} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_CANCEL|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:acc:1020}.
+    \item Сбросить счетчик \lstinline|measurementCount|.
+    \item Присвоить полю \lstinline|command| дескриптора  новую команду \lstinline|CALIB_APPLY|.
+    \item Присвоить полю \lstinline|state| дескриптора новое состояние \lstinline|CALIB_POS_FINISHED|.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithoutData| с кодом \lstinline|BL_CALIB_MANAGER_OK|.
+    \item Вызвать пользовательскую функцию \lstinline|cbWithState| с кодом \lstinline|BL_CALIB_MANAGER_CANCEL| и состоянием из поля \lstinline|state| дескриптора.
+    \item \label{i:alg:acc:1020} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_WAIT_NEW_POS|, то перейти к шагу
+    \ref{i:alg:acc:850}.
+\end{enumerate_step}
 
 \subsection{Алгоритм калибровки гироскопа}
 
-\subsection{Алгоритм расчета ориентации и азимута}
+Описываемый алгоритм отвечает за калибровку гироскопа и описывает полный цикл работы модуля калибровки акселерометра: от инициализации и вычитки параметров до
+вычисления калибровки и уточнения данных. Данный алгоритм не был описан в разделе \ref{sec:domain}, полное понимание принципа калибровки будет дано в данном подразделе.
 
-\subsection{Алгоритм управления калибровкой}
+\begin{enumerate_step}
+    \item Начало алгоритма.
+    \item Проверка дескриптора, что он не равен невалидному адресу \lstinline|BL_CALIB_INVALID_HANDLE|, если равен, то выйти с ошибкой
+    \lstinline|BL_CALIB_ERROR_INVALID_HANDLE|.
+    \item Запуск потока вызовом \lstinline|PT_BEGIN|.
+    \item \label{i:alg:gyro:551} Проверить поле структуры обратного вызова дескриптора \lstinline|memsCb.memsWasRead|, на то были ли получены новые данные от драйвера акселерометра, 
+    если нет, то переключить контекст на другие потоки, иначе выполнить следующий шаг.
+    \item \label{i:alg:gyro:557} Проверка существует ли запрос на чтение параметров из флэш памяти. Если поле \lstinline|readParametersRequest| дескриптора равно \lstinline|CALIB_REQUEST_FOR_PARAMETERS|,
+    то перейти к следующему шагу, иначе перейти к шагу \ref{i:alg:gyro:566}.
+    \item Проверить возможность записи во флэш память при помощи процедуры \lstinline|businessLayer_flashReadyToOperate|, если выходное значение истинно то перейти дальше, иначе переключить контекст.
+    \item Сбросить флаг состояния обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|.
+    \item Вызвать процедуру чтения флэш памяти \lstinline|businessLayer_flashReadAsync|, с переданным параметром \lstinline|calibParams| и размером данных, и присвоить выходное значение функции переменной \lstinline|flashRetCode|.
+    \item Если текущее значение \lstinline|flashRetCode| не равно \lstinline|BL_FLASH_RETURN_CODE_OK|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:gyro:405}.
+    \item Установить поле \lstinline|readParametersRequest| дескриптора равным \lstinline|CALIBRATION_PARAMETERS_WAS_READ_FAIL|, и перейти к шагу \ref{i:alg:gyro:551}.
+    \item \label{i:alg:gyro:405}  Проверить состояние обратного вызова флэш памяти \lstinline|flashCb.flashIsReady|, если значение истинно то перейти дальше, иначе переключить контекст.
+    \item Проверить состояние ошибок обратного вызова флэш памяти \lstinline|flashCb.error|, если значение истинно то перейти дальше, иначе перейти к шагу \ref{i:alg:gyro:551}.
+    \item Присвоить полю \lstinline|readParametersRequest| дескриптора значение \lstinline|CALIB_PARAMETERS_WAS_READ_SUCCESS|.
+    \item Вычислить CRC-код прочитанных данных.
+    % TODO: переход 551 во многих местах неверный исправить
+    \item Сравнить прочитанный CRC-код с вычисленным. Если условие истинно перейти к шагу \ref{i:alg:gyro:551}, иначе перейти к шагу \ref{i:alg:gyro:551}.
+    
+    \item \label{i:alg:gyro:566} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_APPLY|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:gyro:571}.
+
+    \item \label{i:alg:gyro:571} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_RECALIBRATE|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:gyro:599}.
+
+    \item \label{i:alg:gyro:599} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_CANCEL|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:gyro:605}.
+
+    \item \label{i:alg:gyro:605} Если текущее поле \lstinline|command| дескриптора равно \lstinline|CALIB_RESET|, то перейти дальше, иначе перейти к шагу
+    \ref{i:alg:gyro:551}.
+
+\end{enumerate_step}
+
+% \subsection{Алгоритм расчета ориентации и азимута}
+
+% \subsection{Алгоритм управления калибровкой}
