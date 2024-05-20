@@ -72,13 +72,13 @@
 Для установки Vitis и Vivado, что содержат необходимые инструменты для сборки пакетов, а также отладки и прошивки устройства, можно
 обратиться за подробной инструкцией в источнике~\cite{install_vitis, install_vivado}, в процессе установки необходимо будет установить
 все необходимые пакеты. Для установки CMake, Ruby на операционной системе Linux можно воспользоваться командой:
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\ttfamily\small]
     $ sudo apt update
     $ sudo apt install -y cmake ruby
 \end{lstlisting}
 
 Для установки Ninja необходимо его собрать из исходного кода, для этого:
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\ttfamily\small]
     $ git clone git://github.com/ninja-build/ninja.git && cd ninja
     $ git checkout release
     $ cmake -Bbuild-cmake
@@ -86,7 +86,7 @@
 \end{lstlisting}
 
 Чтобы проверить, что все установлено верно можно запустить тесты: 
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\ttfamily\small]
     $ ./build-cmake/ninja_test
 \end{lstlisting}
 
@@ -113,14 +113,14 @@
 
 Для сборки проекта при помощи CMake необходимо ввести в терминал, находясь в папке с проектом следующие команды:
 
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\ttfamily\small]
     $ mkdir build && cd build
     $ cmake -D CMAKE_TOOLCHAIN_FILE="../cmake/mb_v11.cmake" -DBUILD_TYPE=Release -G Ninja .. && cmake --build .
 \end{lstlisting}
 
 Чтобы загрузить исполняемый файл в режиме отладки можно воспользоваться встроенной в Vitis консолью XCST и ввести следующие команды:
 
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\ttfamily\small]
     connect
     fpga -f < full path to bit file>
     targets 3
@@ -133,7 +133,7 @@
 
 Чтобы загрузить прошивку во флэш память необходимо сначала загрузить загрузчик в начальный адрес памяти, для этого в консоли XCST нужно пропсать:
 
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\ttfamily\small]
     program_flash -f <full path to mcs file> -offset 0x00000000 -flash_type s25fl128sxxxxxx0-spi-x1_x2_x4 -blank_check -verify -cable type xilinx_tcf url TCP:127.0.0.1:3121
 \end{lstlisting}
 
@@ -141,8 +141,26 @@
 
 Далее после успешной операции прошивки флэш памяти загрузчиком, необходимо прошить флэш память исполняемым файлом, делается это также через консоль XCST: 
 
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\ttfamily\small]
     program_flash -f <full path to elf file> -offset 0x00800000 -flash_type s25fl128sxxxxxx0-spi-x1_x2_x4 -blank_check -verify -cable type xilinx_tcf url TCP:127.0.0.1:3121
 \end{lstlisting}
 
 Далее можно перезагрузить целевое устройство и прошивка автоматически будет загружена. 
+
+\subsubsection{Сборка только библиотеки модуля}
+
+Для создания библиотеки модуля обработки инерциальных датчиков, потребуется запустить следующий скрипт
+(предполагается, что пользователь находится в папке с исходным кодом библиотеки):
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+    mkdir build && cd build
+    cmake -G Ninja ..
+    cmake --build .
+\end{lstlisting}
+
+Также автоматически будут собраны тесты, для их запуска потребуется выполнить следующую команду:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+    cd build/test
+    ctest --rerun-failed --output-on-failure
+\end{lstlisting}
